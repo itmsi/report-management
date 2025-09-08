@@ -1,0 +1,69 @@
+{
+  "name": "report-management-sso-client",
+  "version": "1.0.0",
+  "description": "Report Management SSO Client - Sistem client SSO untuk integrasi dengan server SSO menggunakan OAuth2/OIDC",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "knex --knexfile src/knexfile.js migrate:latest",
+    "migrate:rollback": "knex --knexfile src/knexfile.js migrate:rollback",
+    "seed": "knex --knexfile src/knexfile.js seed:run",
+    "consumer": "node src/scripts/start-consumer.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/falaqmsi/report-management.git"
+  },
+  "author": "Falaq MSI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/falaqmsi/report-management/issues"
+  },
+  "homepage": "https://github.com/falaqmsi/report-management#readme",
+  "dependencies": {
+    "amqplib": "^0.10.7",
+    "aws-sdk": "^2.1180.0",
+    "axios": "^1.2.2",
+    "bcrypt": "^6.0.0",
+    "compression": "^1.7.4",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.6.1",
+    "edge.js": "^5.3.7",
+    "elastic-apm-node": "^4.7.0",
+    "exceljs": "^4.3.0",
+    "express": "^4.18.1",
+    "express-rate-limit": "^6.7.0",
+    "express-validator": "^6.14.2",
+    "i18n": "^0.15.0",
+    "image-size": "^1.0.2",
+    "jimp": "^1.6.0",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^3.1.2",
+    "knex": "^2.1.0",
+    "method-override": "^3.0.0",
+    "minio": "^8.0.5",
+    "moment": "^2.29.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.7.7",
+    "pdfmake": "^0.2.6",
+    "pg": "^8.7.3",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.32.6",
+    "swagger-ui-express": "^4.4.0",
+    "uuid": "^12.0.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "husky": "^8.0.1",
+    "nodemon": "^3.1.10"
+  }
+}
