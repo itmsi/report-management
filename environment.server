@@ -29,9 +29,13 @@ SSO_ADMIN_PASSWORD=password
 SSO_USER_USERNAME=user
 SSO_USER_PASSWORD=password
 
-# RabbitMQ Configuration (Disabled for SSO Client)
-RABBITMQ_ENABLED=false
-RABBITMQ_URL=amqp://localhost:5672
+# RabbitMQ Configuration (Custom Ports)
+RABBITMQ_ENABLED=true
+RABBITMQ_PORT=9505
+RABBITMQ_PORT_MANAGEMENT=9506
+RABBITMQ_URL=amqp://guest:guest@localhost:9505
+RABBITMQ_DEFAULT_USER=guest
+RABBITMQ_DEFAULT_PASS=guest
 RABBITMQ_QUEUE_NAME=report-management-queue
 
 # Email Configuration (Optional)

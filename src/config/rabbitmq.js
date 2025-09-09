@@ -1,7 +1,7 @@
 const amqp = require('amqplib');
 const { lang } = require('../lang');
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672';
+const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:9505';
 
 const connectRabbitMQ = async () => {
   try {
