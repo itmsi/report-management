@@ -1,4 +1,4 @@
-const knex = require('../../../knexfile');
+const knex = require('../../knexfile');
 const db = require('knex')(knex[process.env.NODE_ENV || 'development']);
 
 class PowerBiRepository {

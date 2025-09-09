@@ -25,21 +25,25 @@ const servers = [
 // Import schemas
 const categoriesSchema = require('./schema/categories');
 const powerBiSchema = require('./schema/powerBi');
+const ssoSchema = require('./schema/sso');
 
 // Import paths
 const categoriesPaths = require('./path/categories');
 const powerBiPaths = require('./path/powerBi');
+const ssoPaths = require('./path/sso');
 
 // Combine all schemas
 const schemas = {
   ...categoriesSchema,
-  ...powerBiSchema
+  ...powerBiSchema,
+  ...ssoSchema
 };
 
 // Combine all paths
 const paths = {
   ...categoriesPaths,
-  ...powerBiPaths
+  ...powerBiPaths,
+  ...ssoPaths
 };
 
 const index = {
