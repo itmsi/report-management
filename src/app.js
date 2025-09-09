@@ -19,12 +19,12 @@ const healthCheck = require('./routes')
 const apiV1 = require('./routes/V1')
 const { initListener } = require('./listeners')
 
-// Conditionally initialize listeners only if RabbitMQ is configured and not disabled
-if (process.env.RABBITMQ_URL && process.env.RABBITMQ_URL !== 'disabled') {
+// Conditionally initialize listeners only if RabbitMQ is enabled
+if (process.env.RABBITMQ_ENABLED === 'true' && process.env.RABBITMQ_URL && process.env.RABBITMQ_URL !== 'disabled') {
   console.log('Initializing RabbitMQ listeners...')
   initListener()
 } else {
-  console.log('RabbitMQ not configured or disabled, skipping listener initialization')
+  console.log('RabbitMQ not enabled or configured, skipping listener initialization')
 }
 
 const limit = process.env.JSON_LIMIT || '1gb'
