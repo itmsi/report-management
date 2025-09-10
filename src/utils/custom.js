@@ -107,7 +107,7 @@ const formatRp = (num, withRp = true) => {
     if (str.indexOf('.') > 0) {
       parts = str.split('.')
       // eslint-disable-next-line prefer-destructuring
-      str = parts[0]
+      str = parts[0] || ''
     }
     str = str.split('').reverse()
     // eslint-disable-next-line no-plusplus

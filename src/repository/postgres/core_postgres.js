@@ -136,7 +136,7 @@ const checkSameValue = async (table, where, column, value, message, flag) => {
   }
   result = await result;
 
-  if (Number(result[0].count) > 0) {
+  if (result && result[0] && Number(result[0].count) > 0) {
     throw new Error(message)
   }
 }

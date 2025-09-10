@@ -39,12 +39,12 @@ const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'd
   // Validasi kolom yang diizinkan
   const validColumn = allowedColumns.length > 0 && allowedColumns.includes(sortBy) 
     ? sortBy 
-    : defaultOrder[0];
+    : (defaultOrder[0] || 'created_at');
   
   // Validasi order direction
   const validOrder = ['asc', 'desc'].includes(sortOrder.toLowerCase()) 
     ? sortOrder.toLowerCase() 
-    : defaultOrder[1];
+    : (defaultOrder[1] || 'desc');
   
   return {
     sortBy: validColumn,
@@ -219,8 +219,8 @@ const dynamicFilter = (req, column = []) => {
 };
 
 const paging = (req, defaultOrder = []) => {
-  const direction = req?.query?.direction || defaultOrder[0];
-  const order = req?.query?.order || defaultOrder[1];
+  const direction = req?.query?.direction || (defaultOrder[0] || 'created_at');
+  const order = req?.query?.order || (defaultOrder[1] || 'desc');
   const page = +req?.query?.page || PAGE;
   const limit = +req?.query?.limit || LIMIT;
   const search = req?.query?.search;

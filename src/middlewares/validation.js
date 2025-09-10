@@ -6,7 +6,7 @@ const checkMessageError = (catchMessage, errors) => {
   let message
   const extractedErrors = []
   errors.array().map((err) => extractedErrors.push(err.msg))
-  switch (catchMessage[0][0]) {
+  switch ((catchMessage[0] && catchMessage[0][0]) || 'unknown') {
     case 'database':
       message = lang.__('knex.db')
       break

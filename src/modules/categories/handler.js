@@ -1,5 +1,9 @@
 const CategoriesRepository = require('./postgre_repository');
-const { pagination } = require('../../utils');
+const { 
+  parseStandardQuery, 
+  sendQuerySuccess, 
+  sendQueryError 
+} = require('../../utils');
 
 class CategoriesHandler {
   async createCategory(req, res) {
@@ -59,37 +63,28 @@ class CategoriesHandler {
 
   async listCategories(req, res) {
     try {
-      const {
-        page = 1,
-        limit = 10,
-        search,
-        sort_by,
-        sort_order
-      } = req.query;
-
-      const filters = {
-        search,
-        sort_by,
-        sort_order
-      };
-
-      const totalCount = await CategoriesRepository.count(filters);
-      const categories = await CategoriesRepository.findAll(filters);
-
-      const paginatedData = pagination(categories, page, limit, totalCount);
-
-      res.json({
-        success: true,
-        message: 'Categories retrieved successfully',
-        ...paginatedData
+      // Parse query parameters dengan konfigurasi standar
+      const queryParams = parseStandardQuery(req, {
+        allowedColumns: ['name', 'created_at', 'updated_at'],
+        defaultOrder: ['created_at', 'desc'],
+        searchableColumns: ['name', 'description'],
+        allowedFilters: [] // Tidak ada filter khusus untuk categories
       });
+
+      // Validasi query parameters
+      if (queryParams.pagination.limit > 100) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      }
+
+      // Get data dengan filter dan pagination
+      const result = await CategoriesRepository.findWithFilters(queryParams);
+
+      // Send success response
+      return sendQuerySuccess(res, result, 'Categories retrieved successfully');
+
     } catch (error) {
       console.error('Error listing categories:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to list categories',
-        error: error.message
-      });
+      return sendQueryError(res, 'Failed to list categories', 500);
     }
   }
 

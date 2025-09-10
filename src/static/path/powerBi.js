@@ -1,5 +1,5 @@
 const powerBiPaths = {
-  '/api/v1/powerbi': {
+  '/powerbi': {
     post: {
       tags: ['PowerBI'],
       summary: 'Create a new PowerBI report',
@@ -139,7 +139,7 @@ const powerBiPaths = {
       }
     }
   },
-  '/api/v1/powerbi/{id}': {
+  '/powerbi/{id}': {
     get: {
       tags: ['PowerBI'],
       summary: 'Get PowerBI report by ID',
@@ -286,7 +286,7 @@ const powerBiPaths = {
       }
     }
   },
-  '/api/v1/powerbi/{id}/restore': {
+  '/powerbi/{id}/restore': {
     post: {
       tags: ['PowerBI'],
       summary: 'Restore deleted PowerBI report',
@@ -327,7 +327,7 @@ const powerBiPaths = {
       }
     }
   },
-  '/api/v1/powerbi/category/{category_id}': {
+  '/powerbi/category/{category_id}': {
     get: {
       tags: ['PowerBI'],
       summary: 'Get PowerBI reports by category',
@@ -379,7 +379,7 @@ const powerBiPaths = {
       }
     }
   },
-  '/api/v1/powerbi/stats/overview': {
+  '/powerbi/stats/overview': {
     get: {
       tags: ['PowerBI'],
       summary: 'Get PowerBI statistics',

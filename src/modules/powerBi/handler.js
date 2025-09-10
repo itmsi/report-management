@@ -1,5 +1,9 @@
 const PowerBiRepository = require('./postgre_repository');
-const { pagination } = require('../../utils');
+const { 
+  parseStandardQuery, 
+  sendQuerySuccess, 
+  sendQueryError 
+} = require('../../utils');
 const { uploadToMinio } = require('../../config/minio');
 const { generateFileName, getContentType } = require('../../middlewares/fileUpload');
 
@@ -85,41 +89,33 @@ class PowerBiHandler {
 
   async listPowerBi(req, res) {
     try {
-      const {
-        page = 1,
-        limit = 10,
-        search,
-        category_id,
-        status,
-        sort_by,
-        sort_order
-      } = req.query;
-
-      const filters = {
-        search,
-        category_id,
-        status,
-        sort_by,
-        sort_order
-      };
-
-      const totalCount = await PowerBiRepository.count(filters);
-      const powerBiList = await PowerBiRepository.findAll(filters);
-
-      const paginatedData = pagination(powerBiList, page, limit, totalCount);
-
-      res.json({
-        success: true,
-        message: 'PowerBI reports retrieved successfully',
-        ...paginatedData
+      // Parse query parameters dengan konfigurasi standar
+      const queryParams = parseStandardQuery(req, {
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        defaultOrder: ['created_at', 'desc'],
+        searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
+        allowedFilters: ['category_id', 'status']
       });
+
+      // Validasi query parameters
+      if (queryParams.pagination.limit > 100) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      }
+
+      // Validasi filter values
+      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      }
+
+      // Get data dengan filter dan pagination
+      const result = await PowerBiRepository.findWithFilters(queryParams);
+
+      // Send success response
+      return sendQuerySuccess(res, result, 'PowerBI reports retrieved successfully');
+
     } catch (error) {
       console.error('Error listing PowerBI reports:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to list PowerBI reports',
-        error: error.message
-      });
+      return sendQueryError(res, 'Failed to list PowerBI reports', 500);
     }
   }
 
@@ -243,20 +239,36 @@ class PowerBiHandler {
     try {
       const { category_id } = req.params;
 
-      const powerBiList = await PowerBiRepository.findByCategoryId(category_id);
-
-      res.json({
-        success: true,
-        message: 'PowerBI reports by category retrieved successfully',
-        data: powerBiList
+      // Parse query parameters untuk endpoint ini juga
+      const queryParams = parseStandardQuery(req, {
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        defaultOrder: ['created_at', 'desc'],
+        searchableColumns: ['powerBis.title', 'powerBis.description'],
+        allowedFilters: ['status']
       });
+
+      // Override category_id filter dengan parameter dari URL
+      queryParams.filters.category_id = category_id;
+
+      // Validasi query parameters
+      if (queryParams.pagination.limit > 100) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      }
+
+      // Validasi filter values
+      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      }
+
+      // Get data dengan filter dan pagination
+      const result = await PowerBiRepository.findWithFilters(queryParams);
+
+      // Send success response
+      return sendQuerySuccess(res, result, 'PowerBI reports by category retrieved successfully');
+
     } catch (error) {
       console.error('Error getting PowerBI reports by category:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to get PowerBI reports by category',
-        error: error.message
-      });
+      return sendQueryError(res, 'Failed to get PowerBI reports by category', 500);
     }
   }
 
@@ -271,11 +283,7 @@ class PowerBiHandler {
       });
     } catch (error) {
       console.error('Error getting PowerBI statistics:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to get PowerBI statistics',
-        error: error.message
-      });
+      return sendQueryError(res, 'Failed to get PowerBI statistics', 500);
     }
   }
 }

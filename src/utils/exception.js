@@ -189,7 +189,7 @@ const mappingErrorValidation = (error, code = HTTP.CREATED) => {
 const mappingError = (error, code = HTTP.CREATED) => {
   let { message, exception } = ['', '']
   const manipulate = error.toString().split(':')
-  switch (manipulate[0]) {
+  switch (manipulate[0] || 'Unknown') {
     case 'JsonWebTokenError':
       message = error
       break
@@ -218,7 +218,7 @@ const mappingError = (error, code = HTTP.CREATED) => {
   if (process.env.NODE_ENV === 'production' && apm) {
     apm.captureError(error);
   }
-  console.log(manipulate[0]);
+  console.log(manipulate[0] || 'Unknown');
   sendAlertSlack({
     alert_type: 'exception',
     messages: message,

@@ -1,5 +1,5 @@
 const categoriesPaths = {
-  '/api/v1/categories': {
+  '/categories': {
     post: {
       tags: ['Categories'],
       summary: 'Create a new category',
@@ -121,7 +121,7 @@ const categoriesPaths = {
       }
     }
   },
-  '/api/v1/categories/{id}': {
+  '/categories/{id}': {
     get: {
       tags: ['Categories'],
       summary: 'Get category by ID',
@@ -268,7 +268,7 @@ const categoriesPaths = {
       }
     }
   },
-  '/api/v1/categories/{id}/restore': {
+  '/categories/{id}/restore': {
     post: {
       tags: ['Categories'],
       summary: 'Restore deleted category',
@@ -309,7 +309,7 @@ const categoriesPaths = {
       }
     }
   },
-  '/api/v1/categories/{id}/powerbi': {
+  '/categories/{id}/powerbi': {
     get: {
       tags: ['Categories'],
       summary: 'Get category with PowerBI data',
