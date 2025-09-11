@@ -51,17 +51,46 @@ const ssoPaths = {
                     success: true,
                     message: 'Login SSO berhasil',
                     data: {
-                      user_id: '123e4567-e89b-12d3-a456-426614174000',
-                      user_name: 'admin',
-                      user_email: 'admin@example.com',
-                      first_name: 'Admin',
-                      last_name: 'User',
-                      roles: ['admin', 'user'],
-                      permissions: ['read', 'write', 'delete', 'admin'],
-                      client_id: 'default_client',
-                      session_id: '123e4567-e89b-12d3-a456-426614174001',
-                      login_time: '2025-09-09T01:00:00.000Z',
-                      ip_address: '127.0.0.1'
+                      user: {
+                        user_id: '123e4567-e89b-12d3-a456-426614174000',
+                        user_name: 'admin',
+                        user_email: 'admin@example.com',
+                        role_id: '1b937518-f4ec-4497-b0af-9e3a733c32e3',
+                        role_name: 'Administrator',
+                        employee_id: '0c777a6e-2f10-4d07-a750-b96d127bd5f9',
+                        employee_name: 'Admin User',
+                        created_at: '2025-09-09T02:52:41.250Z',
+                        updated_at: null
+                      },
+                      permissions: [
+                        {
+                          permission_id: 'a8865aed-53e1-4126-9268-a103bf5bb8e8',
+                          permission_name: 'read',
+                          menu_id: 'e7cb4999-a283-4439-8c52-01f15faa5586',
+                          menu_name: 'Dashboard',
+                          menu_url: '/dashboard'
+                        },
+                        {
+                          permission_id: 'b8865aed-53e1-4126-9268-a103bf5bb8e9',
+                          permission_name: 'write',
+                          menu_id: 'f7cb4999-a283-4439-8c52-01f15faa5587',
+                          menu_name: 'Settings',
+                          menu_url: '/settings'
+                        }
+                      ],
+                      session: {
+                        client_id: 'default_client',
+                        session_id: '123e4567-e89b-12d3-a456-426614174001',
+                        login_time: '2025-09-09T01:00:00.000Z',
+                        ip_address: '127.0.0.1',
+                        last_activity: '2025-09-09T01:00:00.000Z'
+                      },
+                      oauth: {
+                        authorization_code: null,
+                        redirect_uri: null,
+                        expires_in: 600,
+                        sso_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                      }
                     }
                   }
                 },
@@ -71,20 +100,46 @@ const ssoPaths = {
                     success: true,
                     message: 'Login SSO berhasil',
                     data: {
-                      user_id: '123e4567-e89b-12d3-a456-426614174000',
-                      user_name: 'admin',
-                      user_email: 'admin@example.com',
-                      first_name: 'Admin',
-                      last_name: 'User',
-                      roles: ['admin', 'user'],
-                      permissions: ['read', 'write', 'delete', 'admin'],
-                      client_id: 'test_client',
-                      session_id: '123e4567-e89b-12d3-a456-426614174001',
-                      login_time: '2025-09-09T01:00:00.000Z',
-                      ip_address: '127.0.0.1',
-                      authorization_code: 'auth_code_123456789',
-                      redirect_uri: 'http://localhost:3001/callback',
-                      expires_in: 600
+                      user: {
+                        user_id: '123e4567-e89b-12d3-a456-426614174000',
+                        user_name: 'admin',
+                        user_email: 'admin@example.com',
+                        role_id: '1b937518-f4ec-4497-b0af-9e3a733c32e3',
+                        role_name: 'Administrator',
+                        employee_id: '0c777a6e-2f10-4d07-a750-b96d127bd5f9',
+                        employee_name: 'Admin User',
+                        created_at: '2025-09-09T02:52:41.250Z',
+                        updated_at: null
+                      },
+                      permissions: [
+                        {
+                          permission_id: 'a8865aed-53e1-4126-9268-a103bf5bb8e8',
+                          permission_name: 'read',
+                          menu_id: 'e7cb4999-a283-4439-8c52-01f15faa5586',
+                          menu_name: 'Dashboard',
+                          menu_url: '/dashboard'
+                        },
+                        {
+                          permission_id: 'b8865aed-53e1-4126-9268-a103bf5bb8e9',
+                          permission_name: 'write',
+                          menu_id: 'f7cb4999-a283-4439-8c52-01f15faa5587',
+                          menu_name: 'Settings',
+                          menu_url: '/settings'
+                        }
+                      ],
+                      session: {
+                        client_id: 'test_client',
+                        session_id: '123e4567-e89b-12d3-a456-426614174001',
+                        login_time: '2025-09-09T01:00:00.000Z',
+                        ip_address: '127.0.0.1',
+                        last_activity: '2025-09-09T01:00:00.000Z'
+                      },
+                      oauth: {
+                        authorization_code: 'auth_code_123456789',
+                        redirect_uri: 'http://localhost:3001/callback',
+                        expires_in: 600,
+                        sso_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                      }
                     }
                   }
                 }

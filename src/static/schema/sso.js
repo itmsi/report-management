@@ -60,86 +60,159 @@ const ssoSchema = {
       data: {
         type: 'object',
         properties: {
-          user_id: {
-            type: 'string',
-            format: 'uuid',
-            description: 'ID unik user',
-            example: '123e4567-e89b-12d3-a456-426614174000'
-          },
-          user_name: {
-            type: 'string',
-            description: 'Username',
-            example: 'admin'
-          },
-          user_email: {
-            type: 'string',
-            format: 'email',
-            description: 'Email user',
-            example: 'admin@example.com'
-          },
-          first_name: {
-            type: 'string',
-            description: 'Nama depan',
-            example: 'Admin'
-          },
-          last_name: {
-            type: 'string',
-            description: 'Nama belakang',
-            example: 'User'
-          },
-          roles: {
-            type: 'array',
-            items: {
-              type: 'string'
-            },
-            description: 'Roles user',
-            example: ['admin', 'user']
+          user: {
+            type: 'object',
+            description: 'Informasi user lengkap',
+            properties: {
+              user_id: {
+                type: 'string',
+                format: 'uuid',
+                description: 'ID unik user',
+                example: '123e4567-e89b-12d3-a456-426614174000'
+              },
+              user_name: {
+                type: 'string',
+                description: 'Username',
+                example: 'admin'
+              },
+              user_email: {
+                type: 'string',
+                format: 'email',
+                description: 'Email user',
+                example: 'admin@example.com'
+              },
+              role_id: {
+                type: 'string',
+                format: 'uuid',
+                description: 'ID role user',
+                example: '1b937518-f4ec-4497-b0af-9e3a733c32e3'
+              },
+              role_name: {
+                type: 'string',
+                description: 'Nama role',
+                example: 'Administrator'
+              },
+              employee_id: {
+                type: 'string',
+                format: 'uuid',
+                description: 'ID karyawan',
+                example: '0c777a6e-2f10-4d07-a750-b96d127bd5f9'
+              },
+              employee_name: {
+                type: 'string',
+                description: 'Nama lengkap karyawan',
+                example: 'Admin User'
+              },
+              created_at: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Waktu pembuatan user',
+                example: '2025-09-09T02:52:41.250Z'
+              },
+              updated_at: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Waktu update terakhir',
+                example: '2025-09-09T02:52:41.250Z'
+              }
+            }
           },
           permissions: {
             type: 'array',
+            description: 'Daftar permissions user',
             items: {
-              type: 'string'
-            },
-            description: 'Permissions user',
-            example: ['read', 'write', 'delete', 'admin']
+              type: 'object',
+              properties: {
+                permission_id: {
+                  type: 'string',
+                  format: 'uuid',
+                  description: 'ID permission',
+                  example: 'a8865aed-53e1-4126-9268-a103bf5bb8e8'
+                },
+                permission_name: {
+                  type: 'string',
+                  description: 'Nama permission',
+                  example: 'read'
+                },
+                menu_id: {
+                  type: 'string',
+                  format: 'uuid',
+                  description: 'ID menu',
+                  example: 'e7cb4999-a283-4439-8c52-01f15faa5586'
+                },
+                menu_name: {
+                  type: 'string',
+                  description: 'Nama menu',
+                  example: 'Dashboard'
+                },
+                menu_url: {
+                  type: 'string',
+                  description: 'URL menu',
+                  example: '/dashboard'
+                }
+              }
+            }
           },
-          client_id: {
-            type: 'string',
-            description: 'Client ID yang digunakan',
-            example: 'test_client'
+          session: {
+            type: 'object',
+            description: 'Informasi session',
+            properties: {
+              client_id: {
+                type: 'string',
+                description: 'Client ID yang digunakan',
+                example: 'test_client'
+              },
+              session_id: {
+                type: 'string',
+                format: 'uuid',
+                description: 'ID session',
+                example: '123e4567-e89b-12d3-a456-426614174001'
+              },
+              login_time: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Waktu login',
+                example: '2025-09-09T01:00:00.000Z'
+              },
+              ip_address: {
+                type: 'string',
+                description: 'IP address user',
+                example: '127.0.0.1'
+              },
+              last_activity: {
+                type: 'string',
+                format: 'date-time',
+                description: 'Waktu aktivitas terakhir',
+                example: '2025-09-09T01:00:00.000Z'
+              }
+            }
           },
-          session_id: {
-            type: 'string',
-            format: 'uuid',
-            description: 'ID session',
-            example: '123e4567-e89b-12d3-a456-426614174001'
-          },
-          login_time: {
-            type: 'string',
-            format: 'date-time',
-            description: 'Waktu login',
-            example: '2025-09-09T01:00:00.000Z'
-          },
-          ip_address: {
-            type: 'string',
-            description: 'IP address user',
-            example: '127.0.0.1'
-          },
-          authorization_code: {
-            type: 'string',
-            description: 'Authorization code untuk OAuth2 flow (jika redirect_uri disediakan)',
-            example: 'auth_code_123456789'
-          },
-          redirect_uri: {
-            type: 'string',
-            format: 'uri',
-            description: 'Redirect URI (jika disediakan)',
-            example: 'http://localhost:3001/callback'
-          },
-          expires_in: {
-            type: 'integer',
-            description: 'Waktu expired authorization code dalam detik',
-            example: 600
+          oauth: {
+            type: 'object',
+            description: 'Informasi OAuth2 flow',
+            properties: {
+              authorization_code: {
+                type: 'string',
+                description: 'Authorization code untuk OAuth2 flow (jika redirect_uri disediakan)',
+                example: 'auth_code_123456789'
+              },
+              redirect_uri: {
+                type: 'string',
+                format: 'uri',
+                description: 'Redirect URI (jika disediakan)',
+                example: 'http://localhost:3001/callback'
+              },
+              expires_in: {
+                type: 'integer',
+                description: 'Waktu expired authorization code dalam detik',
+                example: 600
+              },
+              sso_token: {
+                type: 'string',
+                description: 'SSO server token',
+                example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+              }
+            }
           }
         }
       }
@@ -282,6 +355,31 @@ const ssoSchema = {
             type: 'string',
             description: 'Nama belakang',
             example: 'User'
+          },
+          employee_name: {
+            type: 'string',
+            description: 'Nama lengkap karyawan',
+            example: 'Admin User'
+          },
+          role_name: {
+            type: 'string',
+            description: 'Nama role',
+            example: 'Administrator'
+          },
+          title_name: {
+            type: 'string',
+            description: 'Nama jabatan',
+            example: 'System Administrator'
+          },
+          department_name: {
+            type: 'string',
+            description: 'Nama departemen',
+            example: 'IT Department'
+          },
+          company_name: {
+            type: 'string',
+            description: 'Nama perusahaan',
+            example: 'Example Company'
           },
           roles: {
             type: 'array',
@@ -463,6 +561,17 @@ const ssoSchema = {
             type: 'integer',
             description: 'Waktu expired authorization code dalam detik',
             example: 600
+          },
+          last_activity: {
+            type: 'string',
+            format: 'date-time',
+            description: 'Waktu aktivitas terakhir',
+            example: '2025-09-09T01:00:00.000Z'
+          },
+          sso_token: {
+            type: 'string',
+            description: 'SSO server token',
+            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
           },
           scope: {
             type: 'string',

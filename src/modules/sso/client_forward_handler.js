@@ -51,28 +51,126 @@ class SSOClientForwardHandler {
           ip: clientIP 
         });
 
-        // Transform response to match client format
+        // Get user info using the token from login response
+        let userInfo = null;
+        Logger.info('Login response from SSO server', {
+          success: response.data.success,
+          has_token: !!response.data.data.token,
+          token_preview: response.data.data.token ? response.data.data.token.substring(0, 20) + '...' : 'none',
+          ip: clientIP
+        });
+        
+        if (response.data.data.token) {
+          try {
+            Logger.info('Attempting to get user info', { 
+              sso_server_url: this.ssoServerUrl,
+              token_available: !!response.data.data.token,
+              ip: clientIP 
+            });
+            
+            const userInfoResponse = await axios.get(
+              `${this.ssoServerUrl}/api/v1/auth/sso/userinfo`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${response.data.data.token}`,
+                  'Accept': 'application/json'
+                },
+                timeout: 10000
+              }
+            );
+            
+            Logger.info('UserInfo response received', {
+              status: userInfoResponse.status,
+              success: userInfoResponse.data.success,
+              has_data: !!userInfoResponse.data.data,
+              data_keys: userInfoResponse.data.data ? Object.keys(userInfoResponse.data.data) : [],
+              ip: clientIP
+            });
+            
+            userInfo = userInfoResponse.data.data; // Extract data from nested response
+            Logger.info('User info retrieved successfully', { 
+              user_id: userInfo.user?.user_id || userInfo.user_id,
+              employee_name: userInfo.user?.employee_name,
+              role_name: userInfo.user?.role_name,
+              permissions_count: userInfo.permissions?.length,
+              userInfo_structure: Object.keys(userInfo),
+              userInfo_available: !!userInfo,
+              ip: clientIP 
+            });
+          } catch (userInfoError) {
+            Logger.error('Failed to get user info after login', { 
+              error: userInfoError.message,
+              status: userInfoError.response?.status,
+              response_data: userInfoError.response?.data,
+              ip: clientIP 
+            });
+            // Continue with basic user info if userinfo endpoint fails
+          }
+        } else {
+          Logger.warn('No token available for userinfo call', { 
+            response_data_keys: Object.keys(response.data.data),
+            ip: clientIP 
+          });
+        }
+
+        // Transform response to match client format with complete user info
         const clientResponse = {
           success: true,
           message: 'Login SSO berhasil',
           data: {
-            user_id: response.data.data.user_id,
-            user_name: username,
-            user_email: `${username}@example.com`, // Default email
-            first_name: username.charAt(0).toUpperCase() + username.slice(1),
-            last_name: 'User',
-            roles: ['user'],
-            permissions: ['read'],
-            client_id: client_id || this.clientId,
-            session_id: response.data.data.user_id, // Use user_id as session_id
-            login_time: new Date().toISOString(),
-            ip_address: clientIP,
-            authorization_code: response.data.data.authorization_code,
-            redirect_uri: redirect_uri || this.redirectUri,
-            expires_in: 600,
-            sso_token: response.data.data.token // Include SSO server token
+            // User information (detailed structure like userinfo endpoint)
+            user: {
+              user_id: response.data.data.user_id,
+              user_name: username,
+              user_email: userInfo?.user?.user_email || `${username}@example.com`,
+              role_id: userInfo?.user?.role_id || null,
+              role_name: userInfo?.user?.role_name || 'user',
+              employee_id: userInfo?.user?.employee_id || null,
+              employee_name: userInfo?.user?.employee_name || null,
+              created_at: userInfo?.user?.created_at || new Date().toISOString(),
+              updated_at: userInfo?.user?.updated_at || null
+            },
+            
+            // Permissions (detailed structure like userinfo endpoint)
+            permissions: userInfo?.permissions || [
+              {
+                permission_id: "default-permission",
+                permission_name: "read",
+                menu_id: "default-menu",
+                menu_name: "Default Menu",
+                menu_url: "/default"
+              }
+            ],
+            
+            // Session and authentication info
+            session: {
+              client_id: client_id || this.clientId,
+              session_id: response.data.data.user_id,
+              login_time: new Date().toISOString(),
+              ip_address: clientIP,
+              last_activity: new Date().toISOString()
+            },
+            
+            // OAuth2 flow info
+            oauth: {
+              authorization_code: response.data.data.authorization_code,
+              redirect_uri: redirect_uri || this.redirectUri,
+              expires_in: 600,
+              sso_token: response.data.data.token
+            }
           }
         };
+
+        // Debug logging
+        Logger.info('Login response data prepared', {
+          user_id: clientResponse.data.user.user_id,
+          employee_name: clientResponse.data.user.employee_name,
+          role_name: clientResponse.data.user.role_name,
+          permissions_count: clientResponse.data.permissions.length,
+          userInfo_available: !!userInfo,
+          userInfo_user_available: !!userInfo?.user,
+          ip: clientIP
+        });
 
         return successResponse(res, clientResponse.data, clientResponse.message);
       } else {
