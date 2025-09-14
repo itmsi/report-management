@@ -36,20 +36,17 @@ class SSOServerHandler {
   // SSO Login endpoint
   async login(req, res) {
     try {
-      const { user_name, user_password, client_id, redirect_uri } = req.body;
+      const { email, password, client_id, redirect_uri } = req.body;
 
-      // Find user by username or email
-      let user = await this.usersRepository.findByUsername(user_name);
-      if (!user) {
-        user = await this.usersRepository.findByEmail(user_name);
-      }
+      // Find user by email
+      const user = await this.usersRepository.findByEmail(email);
 
       if (!user) {
         throw new CustomException('Invalid credentials', 401);
       }
 
       // Verify password
-      const isValidPassword = await this.usersRepository.verifyPassword(user_password, user.user_password);
+      const isValidPassword = await this.usersRepository.verifyPassword(password, user.user_password);
       if (!isValidPassword) {
         throw new CustomException('Invalid credentials', 401);
       }

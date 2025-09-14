@@ -74,9 +74,11 @@ const listUsersValidation = [
 ];
 
 const loginValidation = [
-  body('user_name')
+  body('user_email')
+    .isEmail()
+    .withMessage('Invalid email format')
     .notEmpty()
-    .withMessage('Username is required'),
+    .withMessage('Email is required'),
   body('user_password')
     .notEmpty()
     .withMessage('Password is required'),

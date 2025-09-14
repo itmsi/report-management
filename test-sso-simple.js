@@ -3,7 +3,7 @@ const axios = require('axios');
 // Konfigurasi test
 const BASE_URL = 'http://localhost:9588';
 const TEST_USER = {
-  username: 'admin',
+  email: 'admin@example.com',
   password: 'admin123',
   client_id: 'test_client',
   redirect_uri: 'http://localhost:3001/callback'
@@ -17,7 +17,7 @@ async function testSSOFlow() {
     // Test 1: Login SSO
     console.log('1️⃣ Testing Login SSO...');
     const loginResponse = await axios.post(`${BASE_URL}/api/v1/auth/sso/login`, {
-      username: TEST_USER.username,
+      email: TEST_USER.email,
       password: TEST_USER.password,
       client_id: TEST_USER.client_id,
       redirect_uri: TEST_USER.redirect_uri
@@ -149,7 +149,7 @@ async function testErrorCases() {
     console.log('1️⃣ Testing invalid credentials...');
     try {
       await axios.post(`${BASE_URL}/api/v1/auth/sso/login`, {
-        username: 'invalid',
+        email: 'invalid@example.com',
         password: 'invalid'
       });
       console.log('❌ Seharusnya gagal dengan kredensial invalid');
@@ -163,7 +163,7 @@ async function testErrorCases() {
     console.log('\n2️⃣ Testing missing parameters...');
     try {
       await axios.post(`${BASE_URL}/api/v1/auth/sso/login`, {
-        username: 'admin'
+        email: 'admin@example.com'
         // password missing
       });
       console.log('❌ Seharusnya gagal dengan parameter missing');

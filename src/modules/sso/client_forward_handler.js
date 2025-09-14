@@ -13,19 +13,19 @@ class SSOClientForwardHandler {
   // Forward login request to SSO Server
   async login(req, res) {
     try {
-      const { username, password, client_id, redirect_uri, scope, state } = req.body;
+      const { email, password, client_id, redirect_uri, scope, state } = req.body;
       const clientIP = req.ip || req.connection.remoteAddress;
 
       Logger.info('SSO Client login attempt', { 
-        username, 
+        email, 
         client_id: client_id || this.clientId,
         ip: clientIP 
       });
 
       // Prepare request to SSO Server
       const ssoServerRequest = {
-        user_name: username,
-        user_password: password,
+        email: email,
+        password: password,
         client_id: client_id || this.clientId,
         redirect_uri: redirect_uri || this.redirectUri
       };
@@ -45,7 +45,7 @@ class SSOClientForwardHandler {
 
       if (response.data.success) {
         Logger.info('SSO Client login successful', { 
-          username, 
+          email, 
           user_id: response.data.data.user_id,
           client_id: client_id || this.clientId,
           ip: clientIP 
@@ -113,6 +113,9 @@ class SSOClientForwardHandler {
           });
         }
 
+        // Extract username from email (part before @)
+        const username = email.split('@')[0];
+        
         // Transform response to match client format with complete user info
         const clientResponse = {
           success: true,
@@ -122,7 +125,7 @@ class SSOClientForwardHandler {
             user: {
               user_id: response.data.data.user_id,
               user_name: username,
-              user_email: userInfo?.user?.user_email || `${username}@example.com`,
+              user_email: userInfo?.user?.user_email || email,
               role_id: userInfo?.user?.role_id || null,
               role_name: userInfo?.user?.role_name || 'user',
               employee_id: userInfo?.user?.employee_id || null,

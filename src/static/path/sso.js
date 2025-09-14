@@ -3,7 +3,7 @@ const ssoPaths = {
     post: {
       tags: ['SSO Authentication'],
       summary: 'SSO Login',
-      description: 'Login menggunakan SSO dengan username dan password. Mendukung OAuth2 flow dengan authorization code.',
+      description: 'Login menggunakan SSO dengan email dan password. Mendukung OAuth2 flow dengan authorization code.',
       requestBody: {
         required: true,
         content: {
@@ -16,7 +16,7 @@ const ssoPaths = {
                 summary: 'Basic Login',
                 description: 'Login sederhana tanpa OAuth2 flow',
                 value: {
-                  username: 'admin',
+                  email: 'admin@example.com',
                   password: 'password'
                 }
               },
@@ -24,7 +24,7 @@ const ssoPaths = {
                 summary: 'OAuth2 Login',
                 description: 'Login dengan OAuth2 flow untuk mendapatkan authorization code',
                 value: {
-                  username: 'admin',
+                  email: 'admin@example.com',
                   password: 'password',
                   client_id: 'test_client',
                   redirect_uri: 'http://localhost:3001/callback',
@@ -159,7 +159,7 @@ const ssoPaths = {
                   summary: 'Missing Credentials',
                   value: {
                     success: false,
-                    message: 'Username dan password diperlukan'
+                    message: 'Email dan password diperlukan'
                   }
                 },
                 invalid_client: {

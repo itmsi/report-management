@@ -3,12 +3,13 @@ const ssoSchema = {
   SSOLoginRequest: {
     type: 'object',
     properties: {
-      username: {
+      email: {
         type: 'string',
-        minLength: 3,
-        maxLength: 50,
-        description: 'Username untuk login',
-        example: 'admin'
+        format: 'email',
+        minLength: 5,
+        maxLength: 100,
+        description: 'Email untuk login',
+        example: 'admin@example.com'
       },
       password: {
         type: 'string',
@@ -40,7 +41,7 @@ const ssoSchema = {
         example: 'random_state_string'
       }
     },
-    required: ['username', 'password']
+    required: ['email', 'password']
   },
 
   // SSO Login Response Schema
@@ -683,12 +684,12 @@ const ssoSchema = {
             field: {
               type: 'string',
               description: 'Field name with error',
-              example: 'username'
+              example: 'email'
             },
             message: {
               type: 'string',
               description: 'Error message',
-              example: 'Username diperlukan'
+              example: 'Email diperlukan'
             }
           }
         }

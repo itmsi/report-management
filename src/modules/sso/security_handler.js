@@ -204,48 +204,48 @@ class SecureSSOHandler {
   // Enhanced login with better security
   async login(req, res) {
     try {
-      const { username, password, client_id, redirect_uri, scope, state } = req.body;
+      const { email, password, client_id, redirect_uri, scope, state } = req.body;
       const clientIP = req.ip || req.connection.remoteAddress;
 
       // Enhanced rate limiting
       if (this.isRateLimited(clientIP, client_id)) {
-        Logger.warn('Rate limit exceeded for IP', { ip: clientIP, username, client_id });
+        Logger.warn('Rate limit exceeded for IP', { ip: clientIP, email, client_id });
         return errorResponse(res, 'Terlalu banyak percobaan login. Coba lagi nanti.', 429);
       }
 
       // Validation
-      if (!username || !password) {
-        return errorResponse(res, 'Username dan password diperlukan', 400);
+      if (!email || !password) {
+        return errorResponse(res, 'Email dan password diperlukan', 400);
       }
 
-      // Check if user exists
-      const user = this.users.get(username);
+      // Check if user exists by email
+      const user = Array.from(this.users.values()).find(u => u.email === email);
       if (!user) {
-        this.recordFailedAttempt(clientIP, username);
-        Logger.warn('Login attempt with non-existent user', { username, ip: clientIP });
+        this.recordFailedAttempt(clientIP, email);
+        Logger.warn('Login attempt with non-existent user', { email, ip: clientIP });
         return errorResponse(res, 'Kredensial tidak valid', 401);
       }
 
       // Check if account is locked
       if (user.lockedUntil && user.lockedUntil > Date.now()) {
         const lockTimeRemaining = Math.ceil((user.lockedUntil - Date.now()) / 60000);
-        Logger.warn('Login attempt on locked account', { username, ip: clientIP, lockTimeRemaining });
+        Logger.warn('Login attempt on locked account', { email, ip: clientIP, lockTimeRemaining });
         return errorResponse(res, `Akun terkunci. Coba lagi dalam ${lockTimeRemaining} menit.`, 423);
       }
 
       // Verify password
       const isValidPassword = await verifyPassword(password, user.password);
       if (!isValidPassword) {
-        this.recordFailedAttempt(clientIP, username);
+        this.recordFailedAttempt(clientIP, email);
         user.failedAttempts += 1;
         
         // Lock account after 5 failed attempts
         if (user.failedAttempts >= 5) {
           user.lockedUntil = Date.now() + (30 * 60 * 1000); // 30 minutes
-          Logger.warn('Account locked due to failed attempts', { username, ip: clientIP });
+          Logger.warn('Account locked due to failed attempts', { email, ip: clientIP });
         }
         
-        Logger.warn('Invalid password attempt', { username, ip: clientIP, failedAttempts: user.failedAttempts });
+        Logger.warn('Invalid password attempt', { email, ip: clientIP, failedAttempts: user.failedAttempts });
         return errorResponse(res, 'Kredensial tidak valid', 401);
       }
 
@@ -253,7 +253,7 @@ class SecureSSOHandler {
       if (client_id) {
         const clientValidation = await this.validateClient(client_id, req.body.client_secret, redirect_uri);
         if (!clientValidation.valid) {
-          Logger.warn('Login attempt with invalid client', { username, client_id, ip: clientIP });
+          Logger.warn('Login attempt with invalid client', { email, client_id, ip: clientIP });
           return errorResponse(res, clientValidation.error, 400);
         }
       }
@@ -308,7 +308,7 @@ class SecureSSOHandler {
         }, 'Login SSO berhasil');
       }
 
-      Logger.info('SSO login successful', { username, client_id, ip: clientIP });
+      Logger.info('SSO login successful', { email, client_id, ip: clientIP });
       return successResponse(res, userData, 'Login SSO berhasil');
     } catch (error) {
       Logger.error('Error during SSO login', { error: error.message, stack: error.stack });
@@ -465,9 +465,9 @@ class SecureSSOHandler {
   }
 
   // Record failed attempt with enhanced tracking
-  recordFailedAttempt(ip, username) {
+  recordFailedAttempt(ip, email) {
     const now = Date.now();
-    const key = `${ip}:${username}`;
+    const key = `${ip}:${email}`;
     
     if (!this.failedAttempts.has(key)) {
       this.failedAttempts.set(key, { attempts: 1, firstAttempt: now });

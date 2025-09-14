@@ -1,10 +1,12 @@
 const { body, query } = require('express-validator');
 
 const loginValidation = [
-  body('user_name')
+  body('email')
+    .isEmail()
+    .withMessage('Email format is invalid')
     .notEmpty()
-    .withMessage('Username is required'),
-  body('user_password')
+    .withMessage('Email is required'),
+  body('password')
     .notEmpty()
     .withMessage('Password is required'),
   body('client_id')
