@@ -13,7 +13,7 @@ const info = {
 
 const servers = [
   {
-    url: '/api/v1/',
+    url: '/api/',
     description: 'Development server'
   },
   {

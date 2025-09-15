@@ -5,7 +5,7 @@ const powerBi = require('../../modules/powerBi')
 const ssoRoutes = require('./sso')
 
 const routing = express();
-const API_TAG = '/api/v1';
+const API_TAG = '/api';
 
 /* RULE
 naming convention endpoint: using plural
