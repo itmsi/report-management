@@ -211,6 +211,66 @@ const powerBiSchema = {
       }
     }
   },
+  PowerBiGetRequest: {
+    type: 'object',
+    properties: {
+      page: {
+        type: 'integer',
+        minimum: 1,
+        default: 1,
+        description: 'Page number'
+      },
+      limit: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+        default: 10,
+        description: 'Items per page'
+      },
+      search: {
+        type: 'string',
+        maxLength: 100,
+        description: 'Search term for title, description, or category name'
+      },
+      category_id: {
+        type: 'string',
+        format: 'uuid',
+        description: 'Filter by category ID'
+      },
+      category_name: {
+        type: 'string',
+        maxLength: 100,
+        description: 'Filter by category name'
+      },
+      status: {
+        type: 'string',
+        enum: ['active', 'inactive', 'draft'],
+        description: 'Filter by status'
+      },
+      sort_by: {
+        type: 'string',
+        enum: ['title', 'status', 'created_at', 'updated_at'],
+        default: 'created_at',
+        description: 'Sort field'
+      },
+      sort_order: {
+        type: 'string',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+        description: 'Sort order'
+      }
+    },
+    example: {
+      page: 1,
+      limit: 10,
+      sort_by: 'title',
+      sort_order: 'asc',
+      search: '',
+      category_id: '',
+      category_name: '',
+      status: 'active'
+    }
+  },
   PowerBiStatsResponse: {
     type: 'object',
     properties: {

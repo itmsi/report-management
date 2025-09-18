@@ -1,88 +1,13 @@
-const express = require('express');
-const router = express.Router();
 const CategoriesHandler = require('./handler');
-const {
-  validateCreateCategory,
-  validateUpdateCategory,
-  validateGetCategory,
-  validateDeleteCategory,
-  validateListCategories,
-  validateListCategoriesPost,
-  handleValidationErrors
-} = require('./validation');
-const { verifyToken } = require('../../middlewares');
 
-// Create category
-router.post('/',
-  verifyToken,
-  validateCreateCategory,
-  handleValidationErrors,
-  CategoriesHandler.createCategory
-);
-
-// Get category by ID
-router.get('/:id',
-  verifyToken,
-  validateGetCategory,
-  handleValidationErrors,
-  CategoriesHandler.getCategory
-);
-
-// List categories with pagination and filters
-router.get('/',
-  verifyToken,
-  validateListCategories,
-  handleValidationErrors,
-  CategoriesHandler.listCategories
-);
-
-// Update category
-router.put('/:id',
-  verifyToken,
-  validateUpdateCategory,
-  handleValidationErrors,
-  CategoriesHandler.updateCategory
-);
-
-// Delete category (soft delete)
-router.delete('/:id',
-  verifyToken,
-  validateDeleteCategory,
-  handleValidationErrors,
-  CategoriesHandler.deleteCategory
-);
-
-// Restore deleted category
-router.post('/:id/restore',
-  verifyToken,
-  validateGetCategory,
-  handleValidationErrors,
-  CategoriesHandler.restoreCategory
-);
-
-// Get category with PowerBI data
-router.get('/:id/powerbi',
-  verifyToken,
-  validateGetCategory,
-  handleValidationErrors,
-  CategoriesHandler.getCategoryWithPowerBi
-);
-
-// POST endpoints
-// Get categories via POST method
-router.post('/get',
-  verifyToken,
-  validateListCategoriesPost,
-  handleValidationErrors,
-  CategoriesHandler.getCategoriesPost
-);
-
-// Create category via POST method (alternative endpoint)
-router.post('/create',
-  verifyToken,
-  validateCreateCategory,
-  handleValidationErrors,
-  CategoriesHandler.createCategoryPost
-);
-
-module.exports = router;
+module.exports = {
+  createCategory: CategoriesHandler.createCategory.bind(CategoriesHandler),
+  getCategory: CategoriesHandler.getCategory.bind(CategoriesHandler),
+  listCategories: CategoriesHandler.listCategories.bind(CategoriesHandler),
+  updateCategory: CategoriesHandler.updateCategory.bind(CategoriesHandler),
+  deleteCategory: CategoriesHandler.deleteCategory.bind(CategoriesHandler),
+  restoreCategory: CategoriesHandler.restoreCategory.bind(CategoriesHandler),
+  getCategoryWithPowerBi: CategoriesHandler.getCategoryWithPowerBi.bind(CategoriesHandler),
+  getCategoriesPost: CategoriesHandler.getCategoriesPost.bind(CategoriesHandler),
+  createCategoryPost: CategoriesHandler.createCategoryPost.bind(CategoriesHandler),
+};

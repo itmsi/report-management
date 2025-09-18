@@ -286,6 +286,99 @@ class PowerBiHandler {
       return sendQueryError(res, 'Failed to get PowerBI statistics', 500);
     }
   }
+
+  // POST method for getting PowerBI reports (alternative to GET)
+  async getPowerBiPost(req, res) {
+    try {
+      // Parse query parameters dari body dengan konfigurasi standar
+      const queryParams = parseStandardQuery(req, {
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        defaultOrder: ['created_at', 'desc'],
+        searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
+        allowedFilters: ['category_id', 'status'],
+        fromBody: true // Parse dari body bukan query parameters
+      });
+
+      // Validasi query parameters
+      if (queryParams.pagination.limit > 100) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      }
+
+      // Validasi filter values
+      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      }
+
+      // Handle category_name dari body - tambahkan sebagai filter khusus
+      const { category_name } = req.body;
+      if (category_name) {
+        // Tambahkan filter category_name sebagai custom filter
+        queryParams.filters.category_name = category_name;
+      }
+
+      // Debug log untuk melihat queryParams
+      console.log('DEBUG queryParams:', JSON.stringify(queryParams, null, 2));
+
+      // Get data dengan filter dan pagination menggunakan method yang sama dengan GET
+      const result = await PowerBiRepository.findWithFilters(queryParams);
+
+      // Send success response
+      return sendQuerySuccess(res, result, 'PowerBI reports retrieved successfully');
+
+    } catch (error) {
+      console.error('Error getting PowerBI reports via POST:', error);
+      return sendQueryError(res, 'Failed to get PowerBI reports', 500);
+    }
+  }
+
+  // POST method for creating PowerBI report (alternative endpoint)
+  async createPowerBiPost(req, res) {
+    try {
+      const { category_id, title, link, status, description } = req.body;
+      const createdBy = req.user?.user_id || null;
+
+      let fileUrl = null;
+      
+      // Handle file upload if file is provided
+      if (req.file) {
+        const fileName = generateFileName(req.file.originalname);
+        const contentType = getContentType(req.file.originalname);
+        
+        const uploadResult = await uploadToMinio(fileName, req.file.buffer, contentType);
+        
+        if (uploadResult.success) {
+          fileUrl = uploadResult.url;
+        } else {
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to upload file',
+            error: uploadResult.error
+          });
+        }
+      }
+
+      const powerBiData = {
+        category_id,
+        title,
+        link,
+        status: status || 'active',
+        file: fileUrl,
+        description,
+        created_by: createdBy
+      };
+
+      const powerBi = await PowerBiRepository.create(powerBiData);
+
+      res.status(201).json({
+        success: true,
+        message: 'PowerBI report created successfully',
+        data: powerBi
+      });
+    } catch (error) {
+      console.error('Error creating PowerBI report via POST:', error);
+      return sendQueryError(res, 'Failed to create PowerBI report', 500);
+    }
+  }
 }
 
 module.exports = new PowerBiHandler();

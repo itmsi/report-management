@@ -166,6 +166,13 @@ class PowerBiRepository {
         'categories.name as category_name'
       );
 
+    // Handle custom filter untuk category_name
+    if (queryParams.filters.category_name) {
+      baseQuery.where('categories.name', 'ilike', `%${queryParams.filters.category_name}%`);
+      // Remove category_name dari filters agar tidak diproses lagi di applyStandardFilters
+      delete queryParams.filters.category_name;
+    }
+
     // Query untuk count total records
     const countQuery = buildCountQuery(baseQuery, queryParams);
     const [{ total }] = await countQuery;

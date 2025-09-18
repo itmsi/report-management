@@ -1,9 +1,45 @@
 const powerBiPaths = {
-  '/powerbi': {
+  '/powerbi/get': {
     post: {
       tags: ['PowerBI'],
-      summary: 'Create a new PowerBI report',
-      description: 'Create a new PowerBI report with title, link, and category',
+      summary: 'Get PowerBI reports via POST',
+      description: 'Get a paginated list of PowerBI reports with filters via POST method',
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: false,
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/PowerBiGetRequest'
+            }
+          }
+        }
+      },
+      responses: {
+        200: {
+          description: 'PowerBI reports retrieved successfully',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/PowerBiListResponse'
+              }
+            }
+          }
+        },
+        401: {
+          description: 'Unauthorized'
+        },
+        500: {
+          description: 'Internal server error'
+        }
+      }
+    }
+  },
+  '/powerbi/create': {
+    post: {
+      tags: ['PowerBI'],
+      summary: 'Create PowerBI report via POST',
+      description: 'Create a new PowerBI report with title, link, and category via alternative POST endpoint',
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -32,100 +68,6 @@ const powerBiPaths = {
             'application/json': {
               schema: {
                 $ref: '#/components/schemas/ErrorResponse'
-              }
-            }
-          }
-        },
-        401: {
-          description: 'Unauthorized'
-        },
-        500: {
-          description: 'Internal server error'
-        }
-      }
-    },
-    get: {
-      tags: ['PowerBI'],
-      summary: 'List PowerBI reports',
-      description: 'Get a paginated list of PowerBI reports with optional filters',
-      security: [{ bearerAuth: [] }],
-      parameters: [
-        {
-          name: 'page',
-          in: 'query',
-          description: 'Page number',
-          schema: {
-            type: 'integer',
-            minimum: 1,
-            default: 1
-          }
-        },
-        {
-          name: 'limit',
-          in: 'query',
-          description: 'Items per page',
-          schema: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 100,
-            default: 10
-          }
-        },
-        {
-          name: 'search',
-          in: 'query',
-          description: 'Search term for title, description, or category name',
-          schema: {
-            type: 'string',
-            maxLength: 100
-          }
-        },
-        {
-          name: 'category_id',
-          in: 'query',
-          description: 'Filter by category ID',
-          schema: {
-            type: 'string',
-            format: 'uuid'
-          }
-        },
-        {
-          name: 'status',
-          in: 'query',
-          description: 'Filter by status',
-          schema: {
-            type: 'string',
-            enum: ['active', 'inactive', 'draft']
-          }
-        },
-        {
-          name: 'sort_by',
-          in: 'query',
-          description: 'Sort field',
-          schema: {
-            type: 'string',
-            enum: ['title', 'status', 'created_at', 'updated_at'],
-            default: 'created_at'
-          }
-        },
-        {
-          name: 'sort_order',
-          in: 'query',
-          description: 'Sort order',
-          schema: {
-            type: 'string',
-            enum: ['asc', 'desc'],
-            default: 'desc'
-          }
-        }
-      ],
-      responses: {
-        200: {
-          description: 'PowerBI reports retrieved successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/PowerBiListResponse'
               }
             }
           }
@@ -276,125 +218,6 @@ const powerBiPaths = {
         },
         404: {
           description: 'PowerBI report not found'
-        },
-        401: {
-          description: 'Unauthorized'
-        },
-        500: {
-          description: 'Internal server error'
-        }
-      }
-    }
-  },
-  '/powerbi/{id}/restore': {
-    post: {
-      tags: ['PowerBI'],
-      summary: 'Restore deleted PowerBI report',
-      description: 'Restore a soft-deleted PowerBI report by its ID',
-      security: [{ bearerAuth: [] }],
-      parameters: [
-        {
-          name: 'id',
-          in: 'path',
-          required: true,
-          description: 'PowerBI report ID',
-          schema: {
-            type: 'string',
-            format: 'uuid'
-          }
-        }
-      ],
-      responses: {
-        200: {
-          description: 'PowerBI report restored successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/PowerBiResponse'
-              }
-            }
-          }
-        },
-        404: {
-          description: 'PowerBI report not found or already restored'
-        },
-        401: {
-          description: 'Unauthorized'
-        },
-        500: {
-          description: 'Internal server error'
-        }
-      }
-    }
-  },
-  '/powerbi/category/{category_id}': {
-    get: {
-      tags: ['PowerBI'],
-      summary: 'Get PowerBI reports by category',
-      description: 'Get all PowerBI reports for a specific category',
-      security: [{ bearerAuth: [] }],
-      parameters: [
-        {
-          name: 'category_id',
-          in: 'path',
-          required: true,
-          description: 'Category ID',
-          schema: {
-            type: 'string',
-            format: 'uuid'
-          }
-        }
-      ],
-      responses: {
-        200: {
-          description: 'PowerBI reports by category retrieved successfully',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  success: {
-                    type: 'boolean'
-                  },
-                  message: {
-                    type: 'string'
-                  },
-                  data: {
-                    type: 'array',
-                    items: {
-                      $ref: '#/components/schemas/PowerBi'
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        401: {
-          description: 'Unauthorized'
-        },
-        500: {
-          description: 'Internal server error'
-        }
-      }
-    }
-  },
-  '/powerbi/stats/overview': {
-    get: {
-      tags: ['PowerBI'],
-      summary: 'Get PowerBI statistics',
-      description: 'Get overview statistics of PowerBI reports',
-      security: [{ bearerAuth: [] }],
-      responses: {
-        200: {
-          description: 'PowerBI statistics retrieved successfully',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/PowerBiStatsResponse'
-              }
-            }
-          }
         },
         401: {
           description: 'Unauthorized'
