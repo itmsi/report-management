@@ -3,6 +3,7 @@ const auth = require('../../modules/auth')
 const categories = require('../../modules/categories')
 const powerBi = require('../../modules/powerBi')
 const ssoRoutes = require('./sso')
+const { verifyToken } = require('../../middlewares')
 
 const routing = express();
 const API_TAG = '/api';
@@ -18,9 +19,9 @@ routing.use(`${API_TAG}`, ssoRoutes)
 routing.use(`${API_TAG}/auth`, auth)
 
 // Categories routes
-routing.use(`${API_TAG}/categories`, categories)
+routing.use(`${API_TAG}/categories`, verifyToken, categories)
 
 // PowerBI routes
-routing.use(`${API_TAG}/powerbi`, powerBi)
+routing.use(`${API_TAG}/powerbi`, verifyToken, powerBi)
 
 module.exports = routing;
