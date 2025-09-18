@@ -2,9 +2,16 @@ const express = require('express')
 const auth = require('../../modules/auth')
 const categories = require('../../modules/categories')
 const powerBi = require('../../modules/powerBi')
+const dashboard = require('../../modules/dashboard')
 const ssoRoutes = require('./sso')
 const { verifyToken } = require('../../middlewares')
 const { handleFileUpload } = require('../../middlewares/fileUpload')
+const { 
+  validateGetDashboardData, 
+  validateGetRecentActivities, 
+  validateGetRecentActivitiesPost,
+  handleValidationErrors 
+} = require('../../modules/dashboard/validation')
 
 const routing = express();
 const API_TAG = '/api';
@@ -38,5 +45,12 @@ routing.get(`${API_TAG}/powerbi/category/:category_id`, verifyToken, powerBi.get
 routing.get(`${API_TAG}/powerbi/stats/overview`, verifyToken, powerBi.getPowerBiStats);
 routing.put(`${API_TAG}/powerbi/:id`, verifyToken, handleFileUpload, powerBi.updatePowerBi);
 routing.delete(`${API_TAG}/powerbi/:id`, verifyToken, powerBi.deletePowerBi);
+
+// Dashboard routes
+routing.post(`${API_TAG}/dashboard`, verifyToken, validateGetDashboardData, handleValidationErrors, dashboard.getDashboardData);
+routing.get(`${API_TAG}/dashboard/stats`, verifyToken, dashboard.getDashboardStats);
+routing.post(`${API_TAG}/dashboard/stats`, verifyToken, dashboard.getDashboardStatsPost);
+routing.get(`${API_TAG}/dashboard/activities`, verifyToken, validateGetRecentActivities, handleValidationErrors, dashboard.getRecentActivities);
+routing.post(`${API_TAG}/dashboard/activities`, verifyToken, validateGetRecentActivitiesPost, handleValidationErrors, dashboard.getRecentActivitiesPost);
 
 module.exports = routing;
