@@ -7,6 +7,7 @@ const {
   validateGetCategory,
   validateDeleteCategory,
   validateListCategories,
+  validateListCategoriesPost,
   handleValidationErrors
 } = require('./validation');
 const { verifyToken } = require('../../middlewares');
@@ -65,6 +66,23 @@ router.get('/:id/powerbi',
   validateGetCategory,
   handleValidationErrors,
   CategoriesHandler.getCategoryWithPowerBi
+);
+
+// POST endpoints
+// Get categories via POST method
+router.post('/get',
+  verifyToken,
+  validateListCategoriesPost,
+  handleValidationErrors,
+  CategoriesHandler.getCategoriesPost
+);
+
+// Create category via POST method (alternative endpoint)
+router.post('/create',
+  verifyToken,
+  validateCreateCategory,
+  handleValidationErrors,
+  CategoriesHandler.createCategoryPost
 );
 
 module.exports = router;

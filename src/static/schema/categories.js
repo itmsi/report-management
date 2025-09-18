@@ -77,6 +77,54 @@ const categoriesSchema = {
     },
     required: ['name']
   },
+  GetCategoriesRequest: {
+    type: 'object',
+    properties: {
+      page: {
+        type: 'integer',
+        minimum: 1,
+        default: 1,
+        description: 'Page number'
+      },
+      limit: {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+        default: 10,
+        description: 'Items per page'
+      },
+      search: {
+        type: 'string',
+        maxLength: 100,
+        description: 'Search term for name or description'
+      },
+      sort_by: {
+        type: 'string',
+        enum: ['name', 'created_at', 'updated_at'],
+        default: 'created_at',
+        description: 'Sort field'
+      },
+      sort_order: {
+        type: 'string',
+        enum: ['asc', 'desc'],
+        default: 'desc',
+        description: 'Sort order'
+      },
+      name: {
+        type: 'string',
+        maxLength: 100,
+        description: 'Name'
+      }
+    },
+    example: {
+      page: 1,
+      limit: 10,
+      search: '',
+      sort_by: 'name',
+      sort_order: 'asc',
+      name: ''
+    }
+  },
   UpdateCategoryRequest: {
     type: 'object',
     properties: {

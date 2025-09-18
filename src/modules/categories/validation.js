@@ -65,6 +65,40 @@ const validateListCategories = [
     .optional()
     .isIn(['asc', 'desc'])
     .withMessage('Sort order must be asc or desc'),
+  query('name')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Name filter must not exceed 100 characters')
+    .trim(),
+];
+
+const validateListCategoriesPost = [
+  body('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Page must be a positive integer'),
+  body('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage('Limit must be between 1 and 100'),
+  body('search')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Search term must not exceed 100 characters')
+    .trim(),
+  body('sort_by')
+    .optional()
+    .isIn(['name', 'created_at', 'updated_at'])
+    .withMessage('Invalid sort field'),
+  body('sort_order')
+    .optional()
+    .isIn(['asc', 'desc'])
+    .withMessage('Sort order must be asc or desc'),
+  body('name')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Name filter must not exceed 100 characters')
+    .trim(),
 ];
 
 const handleValidationErrors = (req, res, next) => {
@@ -85,5 +119,6 @@ module.exports = {
   validateGetCategory,
   validateDeleteCategory,
   validateListCategories,
+  validateListCategoriesPost,
   handleValidationErrors
 };

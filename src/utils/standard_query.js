@@ -9,11 +9,13 @@ const { PAGE, LIMIT } = require('./constant');
 /**
  * Parse query parameters untuk pagination
  * @param {Object} req - Express request object
+ * @param {Boolean} fromBody - Whether to parse from body instead of query
  * @returns {Object} Pagination parameters
  */
-const parsePagination = (req) => {
-  const page = parseInt(req.query.page) || PAGE;
-  const limit = parseInt(req.query.limit) || LIMIT;
+const parsePagination = (req, fromBody = false) => {
+  const source = fromBody ? req.body : req.query;
+  const page = parseInt(source.page) || PAGE;
+  const limit = parseInt(source.limit) || LIMIT;
   
   // Validasi limit maksimal
   const maxLimit = 100;
@@ -31,11 +33,13 @@ const parsePagination = (req) => {
  * @param {Object} req - Express request object
  * @param {Array} allowedColumns - Array kolom yang diizinkan untuk sorting
  * @param {Array} defaultOrder - Default order [column, direction]
+ * @param {Boolean} fromBody - Whether to parse from body instead of query
  * @returns {Object} Sorting parameters
  */
-const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'desc']) => {
-  const sortBy = req.query.sort_by || defaultOrder[0];
-  const sortOrder = req.query.sort_order || defaultOrder[1];
+const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'desc'], fromBody = false) => {
+  const source = fromBody ? req.body : req.query;
+  const sortBy = source.sort_by || defaultOrder[0];
+  const sortOrder = source.sort_order || defaultOrder[1];
   
   // Validasi kolom yang diizinkan
   const validColumn = allowedColumns.length > 0 && allowedColumns.includes(sortBy) 
@@ -57,10 +61,12 @@ const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'd
  * Parse query parameters untuk searching
  * @param {Object} req - Express request object
  * @param {Array} searchableColumns - Array kolom yang bisa di-search
+ * @param {Boolean} fromBody - Whether to parse from body instead of query
  * @returns {Object} Search parameters
  */
-const parseSearch = (req, searchableColumns = []) => {
-  const searchTerm = req.query.search || req.query.q || '';
+const parseSearch = (req, searchableColumns = [], fromBody = false) => {
+  const source = fromBody ? req.body : req.query;
+  const searchTerm = source.search || source.q || '';
   
   return {
     searchTerm: searchTerm.trim(),
@@ -72,9 +78,11 @@ const parseSearch = (req, searchableColumns = []) => {
  * Parse query parameters untuk filtering
  * @param {Object} req - Express request object
  * @param {Array} allowedFilters - Array kolom yang diizinkan untuk filter
+ * @param {Boolean} fromBody - Whether to parse from body instead of query
  * @returns {Object} Filter parameters
  */
-const parseFilters = (req, allowedFilters = []) => {
+const parseFilters = (req, allowedFilters = [], fromBody = false) => {
+  const source = fromBody ? req.body : req.query;
   const filters = {};
   
   if (allowedFilters.length === 0) {
@@ -82,8 +90,8 @@ const parseFilters = (req, allowedFilters = []) => {
   }
   
   allowedFilters.forEach(filterKey => {
-    if (req.query[filterKey] !== undefined && req.query[filterKey] !== '') {
-      filters[filterKey] = req.query[filterKey];
+    if (source[filterKey] !== undefined && source[filterKey] !== '') {
+      filters[filterKey] = source[filterKey];
     }
   });
   
@@ -101,13 +109,14 @@ const parseStandardQuery = (req, options = {}) => {
     allowedColumns = [],
     defaultOrder = ['created_at', 'desc'],
     searchableColumns = [],
-    allowedFilters = []
+    allowedFilters = [],
+    fromBody = false
   } = options;
   
-  const pagination = parsePagination(req);
-  const sorting = parseSorting(req, allowedColumns, defaultOrder);
-  const search = parseSearch(req, searchableColumns);
-  const filters = parseFilters(req, allowedFilters);
+  const pagination = parsePagination(req, fromBody);
+  const sorting = parseSorting(req, allowedColumns, defaultOrder, fromBody);
+  const search = parseSearch(req, searchableColumns, fromBody);
+  const filters = parseFilters(req, allowedFilters, fromBody);
   
   return {
     pagination,

@@ -68,7 +68,7 @@ class CategoriesHandler {
         allowedColumns: ['name', 'created_at', 'updated_at'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['name', 'description'],
-        allowedFilters: [] // Tidak ada filter khusus untuk categories
+        allowedFilters: ['name'] // Menambahkan filter name untuk konsistensi
       });
 
       // Validasi query parameters
@@ -205,6 +205,64 @@ class CategoriesHandler {
       res.status(500).json({
         success: false,
         message: 'Failed to get category with PowerBI data',
+        error: error.message
+      });
+    }
+  }
+
+  // POST /categories/get - Get categories with POST method
+  async getCategoriesPost(req, res) {
+    try {
+      // Parse query parameters dari body request
+      const queryParams = parseStandardQuery(req, {
+        allowedColumns: ['name', 'created_at', 'updated_at'],
+        defaultOrder: ['created_at', 'desc'],
+        searchableColumns: ['name', 'description'],
+        allowedFilters: ['name'], // Menambahkan filter name
+        fromBody: true // Mengambil parameter dari body, bukan query string
+      });
+
+      // Validasi query parameters
+      if (queryParams.pagination.limit > 100) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      }
+
+      // Get data dengan filter dan pagination
+      const result = await CategoriesRepository.findWithFilters(queryParams);
+
+      // Send success response
+      return sendQuerySuccess(res, result, 'Categories retrieved successfully');
+
+    } catch (error) {
+      console.error('Error getting categories via POST:', error);
+      return sendQueryError(res, 'Failed to get categories', 500);
+    }
+  }
+
+  // POST /categories/create - Create category with POST method (alias untuk createCategory)
+  async createCategoryPost(req, res) {
+    try {
+      const { name, description } = req.body;
+      const createdBy = req.user?.user_id || null;
+
+      const categoryData = {
+        name,
+        description,
+        created_by: createdBy
+      };
+
+      const category = await CategoriesRepository.create(categoryData);
+
+      res.status(201).json({
+        success: true,
+        message: 'Category created successfully',
+        data: category
+      });
+    } catch (error) {
+      console.error('Error creating category via POST:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to create category',
         error: error.message
       });
     }
