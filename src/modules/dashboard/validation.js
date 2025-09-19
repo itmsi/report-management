@@ -25,7 +25,7 @@ const validateGetDashboardData = [
     .withMessage('Sort order must be asc or desc'),
   body('category_id')
     .optional()
-    .isUUID()
+    .isLength({ max: 255 })
     .withMessage('Invalid category ID format'),
   body('category_name')
     .optional()
