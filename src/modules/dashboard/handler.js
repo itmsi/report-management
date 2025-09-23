@@ -18,19 +18,20 @@ class DashboardHandler {
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['categories.name', 'powerBis.title', 'powerBis.description'],
         allowedFilters: ['category_id', 'category_name', 'title', 'status'],
-        fromBody: true // Mengambil parameter dari body, bukan query string
+        fromBody: true, // Mengambil parameter dari body, bukan query string
+        maxLimit: 1000 // Dashboard mengizinkan limit hingga 1000
       });
 
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
-      // Validasi filter status jika ada
-      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
-        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
-      }
+      // Validasi filter status jika ada - untuk partial match, tidak perlu strict validation
+      // if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+      //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      // }
 
       // Get data dengan filter dan pagination
       const result = await DashboardRepository.findWithFilters(queryParams);

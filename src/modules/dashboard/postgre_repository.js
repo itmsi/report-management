@@ -44,7 +44,7 @@ class DashboardRepository {
       }
 
       if (queryParams.filters.status) {
-        filteredQuery = filteredQuery.where('powerBis.status', queryParams.filters.status);
+        filteredQuery = filteredQuery.where('powerBis.status', 'ilike', `%${queryParams.filters.status}%`);
       }
 
       // Apply search dengan explicit table prefix
@@ -78,7 +78,7 @@ class DashboardRepository {
       }
 
       if (queryParams.filters.status) {
-        countQueryFiltered = countQueryFiltered.where('powerBis.status', queryParams.filters.status);
+        countQueryFiltered = countQueryFiltered.where('powerBis.status', 'ilike', `%${queryParams.filters.status}%`);
       }
 
       // Apply search ke count query

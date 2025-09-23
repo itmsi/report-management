@@ -50,8 +50,8 @@ const validateListCategories = [
     .withMessage('Page must be a positive integer'),
   query('limit')
     .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100'),
+    .isInt({ min: 1, max: 1000 })
+    .withMessage('Limit must be between 1 and 1000'),
   query('search')
     .optional()
     .isLength({ max: 100 })
@@ -79,8 +79,8 @@ const validateListCategoriesPost = [
     .withMessage('Page must be a positive integer'),
   body('limit')
     .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100'),
+    .isInt({ min: 1, max: 1000 })
+    .withMessage('Limit must be between 1 and 1000'),
   body('search')
     .optional()
     .isLength({ max: 100 })

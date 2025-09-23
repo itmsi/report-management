@@ -68,12 +68,13 @@ class CategoriesHandler {
         allowedColumns: ['name', 'created_at', 'updated_at'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['name', 'description'],
-        allowedFilters: ['name'] // Menambahkan filter name untuk konsistensi
+        allowedFilters: ['name'], // Menambahkan filter name untuk konsistensi
+        maxLimit: 1000 // Categories mengizinkan limit hingga 1000
       });
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
       // Get data dengan filter dan pagination
@@ -219,12 +220,13 @@ class CategoriesHandler {
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['name', 'description'],
         allowedFilters: ['name'], // Menambahkan filter name
-        fromBody: true // Mengambil parameter dari body, bukan query string
+        fromBody: true, // Mengambil parameter dari body, bukan query string
+        maxLimit: 1000 // Categories mengizinkan limit hingga 1000
       });
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
       // Get data dengan filter dan pagination

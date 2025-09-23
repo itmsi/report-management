@@ -78,8 +78,8 @@ const validateListPowerBi = [
     .withMessage('Page must be a positive integer'),
   query('limit')
     .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100'),
+    .isInt({ min: 1, max: 1000 })
+    .withMessage('Limit must be between 1 and 1000'),
   query('search')
     .optional()
     .isLength({ max: 100 })
@@ -103,6 +103,43 @@ const validateListPowerBi = [
     .withMessage('Sort order must be asc or desc'),
 ];
 
+const validateListPowerBiPost = [
+  body('page')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Page must be a positive integer'),
+  body('limit')
+    .optional()
+    .isInt({ min: 1, max: 1000 })
+    .withMessage('Limit must be between 1 and 1000'),
+  body('search')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Search term must not exceed 100 characters')
+    .trim(),
+  body('category_id')
+    .optional()
+    .isUUID()
+    .withMessage('Category ID must be a valid UUID'),
+  body('category_name')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Category name must not exceed 100 characters')
+    .trim(),
+  body('status')
+    .optional()
+    .isIn(['active', 'inactive', 'draft'])
+    .withMessage('Status must be active, inactive, or draft'),
+  body('sort_by')
+    .optional()
+    .isIn(['title', 'status', 'created_at', 'updated_at'])
+    .withMessage('Invalid sort field'),
+  body('sort_order')
+    .optional()
+    .isIn(['asc', 'desc'])
+    .withMessage('Sort order must be asc or desc'),
+];
+
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -121,5 +158,6 @@ module.exports = {
   validateGetPowerBi,
   validateDeletePowerBi,
   validateListPowerBi,
+  validateListPowerBiPost,
   handleValidationErrors
 };

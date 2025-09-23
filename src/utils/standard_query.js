@@ -12,13 +12,13 @@ const { PAGE, LIMIT } = require('./constant');
  * @param {Boolean} fromBody - Whether to parse from body instead of query
  * @returns {Object} Pagination parameters
  */
-const parsePagination = (req, fromBody = false) => {
+const parsePagination = (req, fromBody = false, options = {}) => {
   const source = fromBody ? req.body : req.query;
   const page = parseInt(source.page) || PAGE;
   const limit = parseInt(source.limit) || LIMIT;
   
-  // Validasi limit maksimal
-  const maxLimit = 100;
+  // Validasi limit maksimal - default 100, bisa di-override untuk module tertentu
+  const maxLimit = options?.maxLimit || 100;
   const validLimit = Math.min(limit, maxLimit);
   
   return {
@@ -113,7 +113,7 @@ const parseStandardQuery = (req, options = {}) => {
     fromBody = false
   } = options;
   
-  const pagination = parsePagination(req, fromBody);
+  const pagination = parsePagination(req, fromBody, options);
   const sorting = parseSorting(req, allowedColumns, defaultOrder, fromBody);
   const search = parseSearch(req, searchableColumns, fromBody);
   const filters = parseFilters(req, allowedFilters, fromBody);
@@ -159,7 +159,12 @@ const buildCountQuery = (baseQuery, queryParams) => {
   Object.keys(queryParams.filters).forEach(filterKey => {
     const filterValue = queryParams.filters[filterKey];
     if (filterValue !== undefined && filterValue !== '') {
-      countQuery = countQuery.where(filterKey, filterValue);
+      // Untuk filter name dan status, gunakan ilike untuk partial match
+      if (filterKey === 'name' || filterKey === 'status') {
+        countQuery = countQuery.where(filterKey, 'ilike', `%${filterValue}%`);
+      } else {
+        countQuery = countQuery.where(filterKey, filterValue);
+      }
     }
   });
   
@@ -192,7 +197,12 @@ const applyStandardFilters = (baseQuery, queryParams) => {
   Object.keys(queryParams.filters).forEach(filterKey => {
     const filterValue = queryParams.filters[filterKey];
     if (filterValue !== undefined && filterValue !== '') {
-      query = query.where(filterKey, filterValue);
+      // Untuk filter name dan status, gunakan ilike untuk partial match
+      if (filterKey === 'name' || filterKey === 'status') {
+        query = query.where(filterKey, 'ilike', `%${filterValue}%`);
+      } else {
+        query = query.where(filterKey, filterValue);
+      }
     }
   });
   

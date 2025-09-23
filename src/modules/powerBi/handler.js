@@ -94,18 +94,19 @@ class PowerBiHandler {
         allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
-        allowedFilters: ['category_id', 'status']
+        allowedFilters: ['category_id', 'status'],
+        maxLimit: 1000 // PowerBI mengizinkan limit hingga 1000
       });
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
-      // Validasi filter values
-      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
-        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
-      }
+      // Validasi filter values - untuk partial match, tidak perlu strict validation
+      // if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+      //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      // }
 
       // Get data dengan filter dan pagination
       const result = await PowerBiRepository.findWithFilters(queryParams);
@@ -244,21 +245,22 @@ class PowerBiHandler {
         allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description'],
-        allowedFilters: ['status']
+        allowedFilters: ['status'],
+        maxLimit: 1000 // PowerBI mengizinkan limit hingga 1000
       });
 
       // Override category_id filter dengan parameter dari URL
       queryParams.filters.category_id = category_id;
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
-      // Validasi filter values
-      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
-        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
-      }
+      // Validasi filter values - untuk partial match, tidak perlu strict validation
+      // if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+      //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      // }
 
       // Get data dengan filter dan pagination
       const result = await PowerBiRepository.findWithFilters(queryParams);
@@ -296,18 +298,19 @@ class PowerBiHandler {
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
         allowedFilters: ['category_id', 'status'],
-        fromBody: true // Parse dari body bukan query parameters
+        fromBody: true, // Parse dari body bukan query parameters
+        maxLimit: 1000 // PowerBI mengizinkan limit hingga 1000
       });
 
       // Validasi query parameters
-      if (queryParams.pagination.limit > 100) {
-        return sendQueryError(res, 'Limit tidak boleh lebih dari 100', 400);
+      if (queryParams.pagination.limit > 1000) {
+        return sendQueryError(res, 'Limit tidak boleh lebih dari 1000', 400);
       }
 
-      // Validasi filter values
-      if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
-        return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
-      }
+      // Validasi filter values - untuk partial match, tidak perlu strict validation
+      // if (queryParams.filters.status && !['active', 'inactive', 'draft'].includes(queryParams.filters.status)) {
+      //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
+      // }
 
       // Handle category_name dari body - tambahkan sebagai filter khusus
       const { category_name } = req.body;

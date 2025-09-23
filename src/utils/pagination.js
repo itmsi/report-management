@@ -15,7 +15,8 @@ const { LIMIT, PAGE } = require('./constant');
  */
 const parsePagination = (req, defaultOrder = ['created_at', 'desc']) => {
   const page = Math.max(1, parseInt(req.query.page) || PAGE);
-  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || LIMIT));
+  // const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || LIMIT));
+  const limit = Math.max(1, parseInt(req.query.limit) || LIMIT);
   const offset = (page - 1) * limit;
   
   return {
