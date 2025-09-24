@@ -294,10 +294,10 @@ class PowerBiHandler {
     try {
       // Parse query parameters dari body dengan konfigurasi standar
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at', 'powerbi_id', 'category_id'],
         defaultOrder: ['created_at', 'desc'],
-        searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
-        allowedFilters: ['category_id', 'status'],
+        searchableColumns: ['powerBis.title', 'powerBis.description'],
+        allowedFilters: ['category_id', 'status', 'created_by', 'updated_by', 'title', 'description'],
         fromBody: true, // Parse dari body bukan query parameters
         maxLimit: 1000 // PowerBI mengizinkan limit hingga 1000
       });
@@ -312,11 +312,32 @@ class PowerBiHandler {
       //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
       // }
 
-      // Handle category_name dari body - tambahkan sebagai filter khusus
-      const { category_name } = req.body;
+      // Handle custom filters dari body
+      const { category_name, start_date, end_date, title_filter, description_filter } = req.body;
+      
       if (category_name) {
         // Tambahkan filter category_name sebagai custom filter
         queryParams.filters.category_name = category_name;
+      }
+      
+      if (start_date) {
+        // Tambahkan filter start_date untuk filtering berdasarkan tanggal pembuatan
+        queryParams.filters.start_date = start_date;
+      }
+      
+      if (end_date) {
+        // Tambahkan filter end_date untuk filtering berdasarkan tanggal pembuatan
+        queryParams.filters.end_date = end_date;
+      }
+      
+      if (title_filter) {
+        // Filter khusus untuk title dengan partial match
+        queryParams.filters.title_filter = title_filter;
+      }
+      
+      if (description_filter) {
+        // Filter khusus untuk description dengan partial match
+        queryParams.filters.description_filter = description_filter;
       }
 
       // Debug log untuk melihat queryParams

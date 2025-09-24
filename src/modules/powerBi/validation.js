@@ -89,13 +89,44 @@ const validateListPowerBi = [
     .optional()
     .isUUID()
     .withMessage('Category ID must be a valid UUID'),
+  query('category_name')
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage('Category name must not exceed 100 characters')
+    .trim(),
   query('status')
     .optional()
     .isIn(['active', 'inactive', 'draft'])
     .withMessage('Status must be active, inactive, or draft'),
+  query('created_by')
+    .optional()
+    .isUUID()
+    .withMessage('Created by must be a valid UUID'),
+  query('updated_by')
+    .optional()
+    .isUUID()
+    .withMessage('Updated by must be a valid UUID'),
+  query('title_filter')
+    .optional()
+    .isLength({ max: 200 })
+    .withMessage('Title filter must not exceed 200 characters')
+    .trim(),
+  query('description_filter')
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage('Description filter must not exceed 500 characters')
+    .trim(),
+  query('start_date')
+    .optional()
+    .isISO8601()
+    .withMessage('Start date must be a valid ISO 8601 date'),
+  query('end_date')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
   query('sort_by')
     .optional()
-    .isIn(['title', 'status', 'created_at', 'updated_at'])
+    .isIn(['title', 'status', 'created_at', 'updated_at', 'powerbi_id', 'category_id'])
     .withMessage('Invalid sort field'),
   query('sort_order')
     .optional()
@@ -130,9 +161,35 @@ const validateListPowerBiPost = [
     .optional()
     .isIn(['active', 'inactive', 'draft'])
     .withMessage('Status must be active, inactive, or draft'),
+  body('created_by')
+    .optional()
+    .isUUID()
+    .withMessage('Created by must be a valid UUID'),
+  body('updated_by')
+    .optional()
+    .isUUID()
+    .withMessage('Updated by must be a valid UUID'),
+  body('title_filter')
+    .optional()
+    .isLength({ max: 200 })
+    .withMessage('Title filter must not exceed 200 characters')
+    .trim(),
+  body('description_filter')
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage('Description filter must not exceed 500 characters')
+    .trim(),
+  body('start_date')
+    .optional()
+    .isISO8601()
+    .withMessage('Start date must be a valid ISO 8601 date'),
+  body('end_date')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid ISO 8601 date'),
   body('sort_by')
     .optional()
-    .isIn(['title', 'status', 'created_at', 'updated_at'])
+    .isIn(['title', 'status', 'created_at', 'updated_at', 'powerbi_id', 'category_id'])
     .withMessage('Invalid sort field'),
   body('sort_order')
     .optional()

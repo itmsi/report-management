@@ -166,19 +166,154 @@ class PowerBiRepository {
         'categories.name as category_name'
       );
 
-    // Handle custom filter untuk category_name
+    // Simpan custom filters untuk digunakan di count query
+    const customFilters = {
+      category_name: queryParams.filters.category_name,
+      title_filter: queryParams.filters.title_filter,
+      description_filter: queryParams.filters.description_filter,
+      start_date: queryParams.filters.start_date,
+      end_date: queryParams.filters.end_date
+    };
+    
+    // Handle custom filters untuk base query
     if (queryParams.filters.category_name) {
       baseQuery.where('categories.name', 'ilike', `%${queryParams.filters.category_name}%`);
       // Remove category_name dari filters agar tidak diproses lagi di applyStandardFilters
       delete queryParams.filters.category_name;
     }
+    
+    if (queryParams.filters.title_filter) {
+      baseQuery.where('powerBis.title', 'ilike', `%${queryParams.filters.title_filter}%`);
+      delete queryParams.filters.title_filter;
+    }
+    
+    if (queryParams.filters.description_filter) {
+      baseQuery.where('powerBis.description', 'ilike', `%${queryParams.filters.description_filter}%`);
+      delete queryParams.filters.description_filter;
+    }
+    
+    if (queryParams.filters.start_date) {
+      baseQuery.where('powerBis.created_at', '>=', queryParams.filters.start_date);
+      delete queryParams.filters.start_date;
+    }
+    
+    if (queryParams.filters.end_date) {
+      baseQuery.where('powerBis.created_at', '<=', queryParams.filters.end_date);
+      delete queryParams.filters.end_date;
+    }
 
-    // Query untuk count total records
-    const countQuery = buildCountQuery(baseQuery, queryParams);
+    // Query untuk count total records - buat query terpisah untuk count
+    const countQuery = db('powerBis')
+      .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
+      .where('powerBis.is_delete', false)
+      .count('* as total');
+    
+    // Apply custom filters yang sama untuk count query
+    if (customFilters.category_name) {
+      countQuery.where('categories.name', 'ilike', `%${customFilters.category_name}%`);
+    }
+    
+    if (customFilters.title_filter) {
+      countQuery.where('powerBis.title', 'ilike', `%${customFilters.title_filter}%`);
+    }
+    
+    if (customFilters.description_filter) {
+      countQuery.where('powerBis.description', 'ilike', `%${customFilters.description_filter}%`);
+    }
+    
+    if (customFilters.start_date) {
+      countQuery.where('powerBis.created_at', '>=', customFilters.start_date);
+    }
+    
+    if (customFilters.end_date) {
+      countQuery.where('powerBis.created_at', '<=', customFilters.end_date);
+    }
+    
+    // Apply standard filters untuk count query
+    Object.keys(queryParams.filters).forEach(filterKey => {
+      const filterValue = queryParams.filters[filterKey];
+      if (filterValue !== undefined && filterValue !== '') {
+        if (filterKey === 'status') {
+          countQuery.where('powerBis.status', 'ilike', `%${filterValue}%`);
+        } else if (filterKey === 'category_id') {
+          countQuery.where('powerBis.category_id', filterValue);
+        } else if (filterKey === 'created_by') {
+          countQuery.where('powerBis.created_by', filterValue);
+        } else if (filterKey === 'updated_by') {
+          countQuery.where('powerBis.updated_by', filterValue);
+        } else if (filterKey === 'title') {
+          countQuery.where('powerBis.title', 'ilike', `%${filterValue}%`);
+        } else if (filterKey === 'description') {
+          countQuery.where('powerBis.description', 'ilike', `%${filterValue}%`);
+        }
+      }
+    });
+    
+    // Apply search untuk count query
+    if (queryParams.search.searchTerm && queryParams.search.searchableColumns.length > 0) {
+      countQuery.where(function() {
+        queryParams.search.searchableColumns.forEach((column, index) => {
+          if (index === 0) {
+            this.where(column, 'ilike', `%${queryParams.search.searchTerm}%`);
+          } else {
+            this.orWhere(column, 'ilike', `%${queryParams.search.searchTerm}%`);
+          }
+        });
+      });
+    }
+    
     const [{ total }] = await countQuery;
 
-    // Apply filters dan pagination ke base query
-    const dataQuery = applyStandardFilters(baseQuery.clone(), queryParams);
+    // Apply filters dan pagination ke base query dengan custom handling
+    let dataQuery = baseQuery.clone();
+    
+    // Apply search
+    if (queryParams.search.searchTerm && queryParams.search.searchableColumns.length > 0) {
+      dataQuery = dataQuery.where(function() {
+        queryParams.search.searchableColumns.forEach((column, index) => {
+          if (index === 0) {
+            this.where(column, 'ilike', `%${queryParams.search.searchTerm}%`);
+          } else {
+            this.orWhere(column, 'ilike', `%${queryParams.search.searchTerm}%`);
+          }
+        });
+      });
+    }
+    
+    // Apply standard filters dengan prefix tabel yang benar
+    Object.keys(queryParams.filters).forEach(filterKey => {
+      const filterValue = queryParams.filters[filterKey];
+      if (filterValue !== undefined && filterValue !== '') {
+        if (filterKey === 'status') {
+          dataQuery = dataQuery.where('powerBis.status', 'ilike', `%${filterValue}%`);
+        } else if (filterKey === 'category_id') {
+          dataQuery = dataQuery.where('powerBis.category_id', filterValue);
+        } else if (filterKey === 'created_by') {
+          dataQuery = dataQuery.where('powerBis.created_by', filterValue);
+        } else if (filterKey === 'updated_by') {
+          dataQuery = dataQuery.where('powerBis.updated_by', filterValue);
+        } else if (filterKey === 'title') {
+          dataQuery = dataQuery.where('powerBis.title', 'ilike', `%${filterValue}%`);
+        } else if (filterKey === 'description') {
+          dataQuery = dataQuery.where('powerBis.description', 'ilike', `%${filterValue}%`);
+        }
+      }
+    });
+    
+    // Apply sorting dengan prefix tabel yang benar
+    const sortColumn = queryParams.sorting.sortBy === 'category_id' ? 'powerBis.category_id' : 
+                     queryParams.sorting.sortBy === 'title' ? 'powerBis.title' :
+                     queryParams.sorting.sortBy === 'status' ? 'powerBis.status' :
+                     queryParams.sorting.sortBy === 'created_at' ? 'powerBis.created_at' :
+                     queryParams.sorting.sortBy === 'updated_at' ? 'powerBis.updated_at' :
+                     queryParams.sorting.sortBy === 'powerbi_id' ? 'powerBis.powerbi_id' :
+                     'powerBis.created_at';
+    
+    dataQuery = dataQuery.orderBy(sortColumn, queryParams.sorting.sortOrder);
+    
+    // Apply pagination
+    dataQuery = dataQuery.limit(queryParams.pagination.limit).offset(queryParams.pagination.offset);
+    
     const data = await dataQuery;
 
     // Format response dengan pagination metadata
