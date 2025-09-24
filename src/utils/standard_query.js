@@ -38,8 +38,8 @@ const parsePagination = (req, fromBody = false, options = {}) => {
  */
 const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'desc'], fromBody = false) => {
   const source = fromBody ? req.body : req.query;
-  const sortBy = source.sort_by || defaultOrder[0];
-  const sortOrder = source.sort_order || defaultOrder[1];
+  const sortBy = (source.sort_by && source.sort_by.trim() !== '') ? source.sort_by : defaultOrder[0];
+  const sortOrder = (source.sort_order && source.sort_order.trim() !== '') ? source.sort_order : defaultOrder[1];
   
   // Validasi kolom yang diizinkan
   const validColumn = allowedColumns.length > 0 && allowedColumns.includes(sortBy) 
@@ -66,7 +66,8 @@ const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'd
  */
 const parseSearch = (req, searchableColumns = [], fromBody = false) => {
   const source = fromBody ? req.body : req.query;
-  const searchTerm = source.search || source.q || '';
+  const searchTerm = (source.search && source.search.trim() !== '') ? source.search : 
+                     (source.q && source.q.trim() !== '') ? source.q : '';
   
   return {
     searchTerm: searchTerm.trim(),

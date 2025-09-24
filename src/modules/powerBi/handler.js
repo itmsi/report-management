@@ -343,7 +343,7 @@ class PowerBiHandler {
       }
 
       // Debug log untuk melihat queryParams
-      console.log('DEBUG queryParams:', JSON.stringify(queryParams, null, 2));
+      //console.log('DEBUG queryParams:', JSON.stringify(queryParams, null, 2));
 
       // Get data dengan filter dan pagination menggunakan method yang sama dengan GET
       const result = await PowerBiRepository.findWithFilters(queryParams);

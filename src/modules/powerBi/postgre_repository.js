@@ -249,7 +249,6 @@ class PowerBiRepository {
     
     // Apply search untuk count query - cari di kolom title dan description tabel powerBis
     if (queryParams.search.searchTerm) {
-      console.log('DEBUG: Applying search filter with term:', queryParams.search.searchTerm);
       countQuery.where(function() {
         this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
           .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
@@ -263,7 +262,6 @@ class PowerBiRepository {
     
     // Apply search - cari di kolom title dan description tabel powerBis
     if (queryParams.search.searchTerm) {
-      console.log('DEBUG: Applying search filter to data query with term:', queryParams.search.searchTerm);
       dataQuery = dataQuery.where(function() {
         this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
           .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
