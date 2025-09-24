@@ -93,7 +93,7 @@ class PowerBiHandler {
       const queryParams = parseStandardQuery(req, {
         allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
         defaultOrder: ['created_at', 'desc'],
-        searchableColumns: ['powerBis.title', 'powerBis.description', 'categories.name'],
+        searchableColumns: ['powerBis.title', 'powerBis.description'],
         allowedFilters: ['category_id', 'status'],
         maxLimit: 1000 // PowerBI mengizinkan limit hingga 1000
       });

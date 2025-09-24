@@ -40,8 +40,7 @@ class PowerBiRepository {
     if (filters.search) {
       query = query.where(function() {
         this.where('powerBis.title', 'ilike', `%${filters.search}%`)
-          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`)
-          .orWhere('categories.name', 'ilike', `%${filters.search}%`);
+          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`);
       });
     }
 
@@ -113,8 +112,7 @@ class PowerBiRepository {
     if (filters.search) {
       query = query.where(function() {
         this.where('powerBis.title', 'ilike', `%${filters.search}%`)
-          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`)
-          .orWhere('categories.name', 'ilike', `%${filters.search}%`);
+          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`);
       });
     }
 
@@ -338,8 +336,7 @@ class PowerBiRepository {
     if (filters.search) {
       query = query.where(function() {
         this.where('powerBis.title', 'ilike', `%${filters.search}%`)
-          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`)
-          .orWhere('categories.name', 'ilike', `%${filters.search}%`);
+          .orWhere('powerBis.description', 'ilike', `%${filters.search}%`);
       });
     }
 
