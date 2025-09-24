@@ -190,15 +190,15 @@ class PowerBiRepository {
       delete queryParams.filters.description_filter;
     }
     
-    if (queryParams.filters.start_date) {
-      baseQuery.where('powerBis.created_at', '>=', queryParams.filters.start_date);
-      delete queryParams.filters.start_date;
-    }
+    // if (queryParams.filters.start_date) {
+    //   baseQuery.where('powerBis.created_at', '>=', queryParams.filters.start_date);
+    //   delete queryParams.filters.start_date;
+    // }
     
-    if (queryParams.filters.end_date) {
-      baseQuery.where('powerBis.created_at', '<=', queryParams.filters.end_date);
-      delete queryParams.filters.end_date;
-    }
+    // if (queryParams.filters.end_date) {
+    //   baseQuery.where('powerBis.created_at', '<=', queryParams.filters.end_date);
+    //   delete queryParams.filters.end_date;
+    // }
 
     // Query untuk count total records - buat query terpisah untuk count
     const countQuery = db('powerBis')
@@ -247,16 +247,12 @@ class PowerBiRepository {
       }
     });
     
-    // Apply search untuk count query
-    if (queryParams.search.searchTerm && queryParams.search.searchableColumns.length > 0) {
+    // Apply search untuk count query - cari di kolom title dan description tabel powerBis
+    if (queryParams.search.searchTerm) {
+      console.log('DEBUG: Applying search filter with term:', queryParams.search.searchTerm);
       countQuery.where(function() {
-        queryParams.search.searchableColumns.forEach((column, index) => {
-          if (index === 0) {
-            this.where(column, 'ilike', `%${queryParams.search.searchTerm}%`);
-          } else {
-            this.orWhere(column, 'ilike', `%${queryParams.search.searchTerm}%`);
-          }
-        });
+        this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
+          .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
       });
     }
     
@@ -265,16 +261,12 @@ class PowerBiRepository {
     // Apply filters dan pagination ke base query dengan custom handling
     let dataQuery = baseQuery.clone();
     
-    // Apply search
-    if (queryParams.search.searchTerm && queryParams.search.searchableColumns.length > 0) {
+    // Apply search - cari di kolom title dan description tabel powerBis
+    if (queryParams.search.searchTerm) {
+      console.log('DEBUG: Applying search filter to data query with term:', queryParams.search.searchTerm);
       dataQuery = dataQuery.where(function() {
-        queryParams.search.searchableColumns.forEach((column, index) => {
-          if (index === 0) {
-            this.where(column, 'ilike', `%${queryParams.search.searchTerm}%`);
-          } else {
-            this.orWhere(column, 'ilike', `%${queryParams.search.searchTerm}%`);
-          }
-        });
+        this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
+          .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
       });
     }
     

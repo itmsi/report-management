@@ -315,6 +315,8 @@ class PowerBiHandler {
       // Handle custom filters dari body
       const { category_name, start_date, end_date, title_filter, description_filter } = req.body;
       
+      // Note: search sudah diproses oleh parseStandardQuery menjadi queryParams.search.searchTerm
+      
       if (category_name) {
         // Tambahkan filter category_name sebagai custom filter
         queryParams.filters.category_name = category_name;

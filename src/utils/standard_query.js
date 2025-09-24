@@ -129,7 +129,7 @@ const parseStandardQuery = (req, options = {}) => {
     offset: pagination.offset,
     sort_by: sorting.sortBy,
     sort_order: sorting.sortOrder,
-    search: search.searchTerm
+    searchTerm: search.searchTerm
   };
 };
 
