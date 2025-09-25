@@ -14,7 +14,7 @@ class DashboardRepository {
    */
   async findWithFilters(queryParams) {
     try {
-      // Base query untuk data dengan JOIN ke categories
+      // Base query untuk data dengan JOIN ke categories dan employeeHasPowerBi
       const baseQuery = db('powerBis')
         .select([
           'categories.name as category_name',
@@ -25,11 +25,18 @@ class DashboardRepository {
           'powerBis.description'
         ])
         .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
+        .leftJoin('employeeHasPowerBi', 'powerBis.powerbi_id', 'employeeHasPowerBi.powerbi_id')
         .where('powerBis.is_delete', false)
-        .where('categories.is_delete', false);
+        .where('categories.is_delete', false)
+        .where('employeeHasPowerBi.is_delete', false);
 
       // Apply custom filters dengan explicit table prefix
       let filteredQuery = baseQuery.clone();
+      
+      // Filter berdasarkan employee_id dari token (WAJIB)
+      if (queryParams.employeeId) {
+        filteredQuery = filteredQuery.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
+      }
       
       if (queryParams.filters.category_id) {
         filteredQuery = filteredQuery.where('powerBis.category_id', queryParams.filters.category_id);
@@ -48,7 +55,7 @@ class DashboardRepository {
       }
 
       // Apply search dengan explicit table prefix
-      if (queryParams.search && queryParams.search.trim() !== '') {
+      if (queryParams.search && typeof queryParams.search === 'string' && queryParams.search.trim() !== '') {
         filteredQuery = filteredQuery.where(function() {
           this.where('categories.name', 'ilike', `%${queryParams.search}%`)
               .orWhere('powerBis.title', 'ilike', `%${queryParams.search}%`)
@@ -59,11 +66,18 @@ class DashboardRepository {
       // Query untuk count total records - hanya count tanpa select kolom lain
       const countQuery = db('powerBis')
         .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
+        .leftJoin('employeeHasPowerBi', 'powerBis.powerbi_id', 'employeeHasPowerBi.powerbi_id')
         .where('powerBis.is_delete', false)
-        .where('categories.is_delete', false);
+        .where('categories.is_delete', false)
+        .where('employeeHasPowerBi.is_delete', false);
 
       // Apply filters yang sama ke count query
       let countQueryFiltered = countQuery.clone();
+      
+      // Filter berdasarkan employee_id dari token (WAJIB)
+      if (queryParams.employeeId) {
+        countQueryFiltered = countQueryFiltered.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
+      }
       
       if (queryParams.filters.category_id) {
         countQueryFiltered = countQueryFiltered.where('powerBis.category_id', queryParams.filters.category_id);
@@ -82,7 +96,7 @@ class DashboardRepository {
       }
 
       // Apply search ke count query
-      if (queryParams.search && queryParams.search.trim() !== '') {
+      if (queryParams.search && typeof queryParams.search === 'string' && queryParams.search.trim() !== '') {
         countQueryFiltered = countQueryFiltered.where(function() {
           this.where('categories.name', 'ilike', `%${queryParams.search}%`)
               .orWhere('powerBis.title', 'ilike', `%${queryParams.search}%`)

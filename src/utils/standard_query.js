@@ -66,11 +66,11 @@ const parseSorting = (req, allowedColumns = [], defaultOrder = ['created_at', 'd
  */
 const parseSearch = (req, searchableColumns = [], fromBody = false) => {
   const source = fromBody ? req.body : req.query;
-  const searchTerm = (source.search && source.search.trim() !== '') ? source.search : 
-                     (source.q && source.q.trim() !== '') ? source.q : '';
+  const searchTerm = (source.search && typeof source.search === 'string' && source.search.trim() !== '') ? source.search : 
+                     (source.q && typeof source.q === 'string' && source.q.trim() !== '') ? source.q : '';
   
   return {
-    searchTerm: searchTerm.trim(),
+    searchTerm: typeof searchTerm === 'string' ? searchTerm.trim() : '',
     searchableColumns,
   };
 };

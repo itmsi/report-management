@@ -12,6 +12,13 @@ class DashboardHandler {
    */
   async getDashboardData(req, res) {
     try {
+      // Ambil employee_id dari token
+      const employeeId = req.user?.employee_id || req.user?.user_id;
+      
+      if (!employeeId) {
+        return sendQueryError(res, 'Employee ID tidak ditemukan dalam token', 401);
+      }
+
       // Parse query parameters dari body request
       const queryParams = parseStandardQuery(req, {
         allowedColumns: ['category_name', 'title', 'status', 'created_at', 'updated_at'],
@@ -22,6 +29,8 @@ class DashboardHandler {
         maxLimit: 1000 // Dashboard mengizinkan limit hingga 1000
       });
 
+      // Tambahkan employee_id ke queryParams
+      queryParams.employeeId = employeeId;
 
       // Validasi query parameters
       if (queryParams.pagination.limit > 1000) {
@@ -33,7 +42,7 @@ class DashboardHandler {
       //   return sendQueryError(res, 'Status harus active, inactive, atau draft', 400);
       // }
 
-      // Get data dengan filter dan pagination
+      // Get data dengan filter dan pagination berdasarkan employee_id
       const result = await DashboardRepository.findWithFilters(queryParams);
 
       // Send success response

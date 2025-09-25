@@ -13,6 +13,8 @@ const verifyToken = async (req, res, next) => {
         data: []
       })
     } else {
+      // Simpan decoded token ke req.user
+      req.user = decode
       next()
     }
   } else {
