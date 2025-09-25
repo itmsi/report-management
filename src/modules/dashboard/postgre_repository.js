@@ -55,11 +55,10 @@ class DashboardRepository {
       }
 
       // Apply search dengan explicit table prefix
-      if (queryParams.search && typeof queryParams.search === 'string' && queryParams.search.trim() !== '') {
+      if (queryParams.search && queryParams.search.searchTerm && queryParams.search.searchTerm.trim() !== '') {
         filteredQuery = filteredQuery.where(function() {
-          this.where('categories.name', 'ilike', `%${queryParams.search}%`)
-              .orWhere('powerBis.title', 'ilike', `%${queryParams.search}%`)
-              .orWhere('powerBis.description', 'ilike', `%${queryParams.search}%`);
+          this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
+              .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
         });
       }
 
@@ -96,11 +95,10 @@ class DashboardRepository {
       }
 
       // Apply search ke count query
-      if (queryParams.search && typeof queryParams.search === 'string' && queryParams.search.trim() !== '') {
+      if (queryParams.search && queryParams.search.searchTerm && queryParams.search.searchTerm.trim() !== '') {
         countQueryFiltered = countQueryFiltered.where(function() {
-          this.where('categories.name', 'ilike', `%${queryParams.search}%`)
-              .orWhere('powerBis.title', 'ilike', `%${queryParams.search}%`)
-              .orWhere('powerBis.description', 'ilike', `%${queryParams.search}%`);
+          this.where('powerBis.title', 'ilike', `%${queryParams.search.searchTerm}%`)
+              .orWhere('powerBis.description', 'ilike', `%${queryParams.search.searchTerm}%`);
         });
       }
 
