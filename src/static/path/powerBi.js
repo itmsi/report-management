@@ -39,7 +39,7 @@ const powerBiPaths = {
     post: {
       tags: ['PowerBI'],
       summary: 'Create PowerBI report via POST',
-      description: 'Create a new PowerBI report with title, link, and category via alternative POST endpoint',
+      description: 'Create a new PowerBI report with title, link, category, and employee access via POST endpoint',
       security: [{ bearerAuth: [] }],
       requestBody: {
         required: true,
@@ -47,6 +47,70 @@ const powerBiPaths = {
           'multipart/form-data': {
             schema: {
               $ref: '#/components/schemas/CreatePowerBiRequest'
+            },
+            example: {
+              category_id: '550e8400-e29b-41d4-a716-446655440006',
+              title: 'testing',
+              link: 'http://localhost:9581/documentation/#/Categories/post_categories_get',
+              status: 'active',
+              description: 'string',
+              file: '',
+              employeeHasPowerBi: '[{"employee_id": "550e8400-e29b-41d4-a716-446655440001"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440002"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440003"}]'
+            }
+          }
+        }
+      },
+      responses: {
+        201: {
+          description: 'PowerBI report created successfully',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/PowerBiResponse'
+              }
+            }
+          }
+        },
+        400: {
+          description: 'Validation error',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ErrorResponse'
+              }
+            }
+          }
+        },
+        401: {
+          description: 'Unauthorized'
+        },
+        500: {
+          description: 'Internal server error'
+        }
+      }
+    }
+  },
+  '/powerbi': {
+    post: {
+      tags: ['PowerBI'],
+      summary: 'Create PowerBI report',
+      description: 'Create a new PowerBI report with title, link, category, and employee access',
+      security: [{ bearerAuth: [] }],
+      requestBody: {
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              $ref: '#/components/schemas/CreatePowerBiRequest'
+            },
+            example: {
+              category_id: '550e8400-e29b-41d4-a716-446655440006',
+              title: 'testing',
+              link: 'http://localhost:9581/documentation/#/Categories/post_categories_get',
+              status: 'active',
+              description: 'string',
+              file: '',
+              employeeHasPowerBi: '[{"employee_id": "550e8400-e29b-41d4-a716-446655440001"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440002"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440003"}]'
             }
           }
         }

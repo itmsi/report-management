@@ -1,4 +1,5 @@
 const PowerBiRepository = require('./postgre_repository');
+const EmployeeHasPowerBiRepository = require('./employeeHasPowerBi_repository');
 const { 
   parseStandardQuery, 
   sendQuerySuccess, 
@@ -10,7 +11,7 @@ const { generateFileName, getContentType } = require('../../middlewares/fileUplo
 class PowerBiHandler {
   async createPowerBi(req, res) {
     try {
-      const { category_id, title, link, status, description } = req.body;
+      const { category_id, title, link, status, description, employeeHasPowerBi } = req.body;
       const createdBy = req.user?.user_id || null;
 
       let fileUrl = null;
@@ -44,6 +45,31 @@ class PowerBiHandler {
       };
 
       const powerBi = await PowerBiRepository.create(powerBiData);
+
+      // Handle employeeHasPowerBi if provided
+      if (employeeHasPowerBi) {
+        try {
+          // Parse employeeHasPowerBi if it's a string (from form data)
+          let employeeIds = employeeHasPowerBi;
+          if (typeof employeeHasPowerBi === 'string') {
+            employeeIds = JSON.parse(employeeHasPowerBi);
+          }
+
+          // Extract employee_id from each object
+          const employeeIdList = employeeIds.map(emp => emp.employee_id).filter(id => id);
+          
+          if (employeeIdList.length > 0) {
+            await EmployeeHasPowerBiRepository.createEmployeePowerBiRelations(
+              powerBi.powerbi_id, 
+              employeeIdList, 
+              createdBy
+            );
+          }
+        } catch (parseError) {
+          console.error('Error parsing employeeHasPowerBi:', parseError);
+          // Continue without failing the entire request
+        }
+      }
 
       res.status(201).json({
         success: true,
@@ -123,7 +149,7 @@ class PowerBiHandler {
   async updatePowerBi(req, res) {
     try {
       const { id } = req.params;
-      const { category_id, title, link, status, description } = req.body;
+      const { category_id, title, link, status, description, employeeHasPowerBi } = req.body;
       const updatedBy = req.user?.user_id || null;
 
       const existingPowerBi = await PowerBiRepository.findById(id);
@@ -164,6 +190,31 @@ class PowerBiHandler {
 
       const powerBi = await PowerBiRepository.update(id, updateData);
 
+      // Handle employeeHasPowerBi if provided
+      if (employeeHasPowerBi) {
+        try {
+          // Parse employeeHasPowerBi if it's a string (from form data)
+          let employeeIds = employeeHasPowerBi;
+          if (typeof employeeHasPowerBi === 'string') {
+            employeeIds = JSON.parse(employeeHasPowerBi);
+          }
+
+          // Extract employee_id from each object
+          const employeeIdList = employeeIds.map(emp => emp.employee_id).filter(id => id);
+          
+          if (employeeIdList.length > 0) {
+            await EmployeeHasPowerBiRepository.createEmployeePowerBiRelations(
+              id, 
+              employeeIdList, 
+              updatedBy
+            );
+          }
+        } catch (parseError) {
+          console.error('Error parsing employeeHasPowerBi:', parseError);
+          // Continue without failing the entire request
+        }
+      }
+
       res.json({
         success: true,
         message: 'PowerBI report updated successfully',
@@ -193,6 +244,9 @@ class PowerBiHandler {
       }
 
       await PowerBiRepository.softDelete(id, deletedBy);
+      
+      // Also soft delete employee relations
+      await EmployeeHasPowerBiRepository.deleteRelationsByPowerBiId(id, deletedBy);
 
       res.json({
         success: true,
@@ -220,6 +274,9 @@ class PowerBiHandler {
           message: 'PowerBI report not found or already restored'
         });
       }
+
+      // Also restore employee relations
+      await EmployeeHasPowerBiRepository.restoreRelationsByPowerBiId(id, updatedBy);
 
       res.json({
         success: true,
@@ -360,7 +417,7 @@ class PowerBiHandler {
   // POST method for creating PowerBI report (alternative endpoint)
   async createPowerBiPost(req, res) {
     try {
-      const { category_id, title, link, status, description } = req.body;
+      const { category_id, title, link, status, description, employeeHasPowerBi } = req.body;
       const createdBy = req.user?.user_id || null;
 
       let fileUrl = null;
@@ -394,6 +451,31 @@ class PowerBiHandler {
       };
 
       const powerBi = await PowerBiRepository.create(powerBiData);
+
+      // Handle employeeHasPowerBi if provided
+      if (employeeHasPowerBi) {
+        try {
+          // Parse employeeHasPowerBi if it's a string (from form data)
+          let employeeIds = employeeHasPowerBi;
+          if (typeof employeeHasPowerBi === 'string') {
+            employeeIds = JSON.parse(employeeHasPowerBi);
+          }
+
+          // Extract employee_id from each object
+          const employeeIdList = employeeIds.map(emp => emp.employee_id).filter(id => id);
+          
+          if (employeeIdList.length > 0) {
+            await EmployeeHasPowerBiRepository.createEmployeePowerBiRelations(
+              powerBi.powerbi_id, 
+              employeeIdList, 
+              createdBy
+            );
+          }
+        } catch (parseError) {
+          console.error('Error parsing employeeHasPowerBi:', parseError);
+          // Continue without failing the entire request
+        }
+      }
 
       res.status(201).json({
         success: true,

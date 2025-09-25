@@ -116,6 +116,11 @@ const powerBiSchema = {
         type: 'string',
         format: 'binary',
         description: 'PowerBI report file (.pbix, .xlsx, .pdf, etc.)'
+      },
+      employeeHasPowerBi: {
+        type: 'string',
+        description: 'JSON string array of employee IDs who have access to this PowerBI report',
+        example: '[{"employee_id": "550e8400-e29b-41d4-a716-446655440001"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440002"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440003"}]'
       }
     },
     required: ['category_id', 'title', 'link']
@@ -152,6 +157,11 @@ const powerBiSchema = {
         type: 'string',
         format: 'binary',
         description: 'PowerBI report file (.pbix, .xlsx, .pdf, etc.)'
+      },
+      employeeHasPowerBi: {
+        type: 'string',
+        description: 'JSON string array of employee IDs who have access to this PowerBI report',
+        example: '[{"employee_id": "550e8400-e29b-41d4-a716-446655440001"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440002"}, {"employee_id": "550e8400-e29b-41d4-a716-446655440003"}]'
       }
     }
   },
