@@ -47,10 +47,10 @@ routing.put(`${API_TAG}/powerbi/:id`, verifyToken, handleFileUpload, powerBi.upd
 routing.delete(`${API_TAG}/powerbi/:id`, verifyToken, powerBi.deletePowerBi);
 
 // Dashboard routes
-routing.post(`${API_TAG}/dashboard`, verifyToken, validateGetDashboardData, handleValidationErrors, dashboard.getDashboardData);
-routing.get(`${API_TAG}/dashboard/stats`, verifyToken, dashboard.getDashboardStats);
-routing.post(`${API_TAG}/dashboard/stats`, verifyToken, dashboard.getDashboardStatsPost);
-routing.get(`${API_TAG}/dashboard/activities`, verifyToken, validateGetRecentActivities, handleValidationErrors, dashboard.getRecentActivities);
-routing.post(`${API_TAG}/dashboard/activities`, verifyToken, validateGetRecentActivitiesPost, handleValidationErrors, dashboard.getRecentActivitiesPost);
+routing.post(`${API_TAG}/powerbi/dashboard`, verifyToken, validateGetDashboardData, handleValidationErrors, dashboard.getDashboardData);
+routing.get(`${API_TAG}/powerbi/dashboard/stats`, verifyToken, dashboard.getDashboardStats);
+routing.post(`${API_TAG}/powerbi/dashboard/stats`, verifyToken, dashboard.getDashboardStatsPost);
+routing.get(`${API_TAG}/powerbi/dashboard/activities`, verifyToken, validateGetRecentActivities, handleValidationErrors, dashboard.getRecentActivities);
+routing.post(`${API_TAG}/powerbi/dashboard/activities`, verifyToken, validateGetRecentActivitiesPost, handleValidationErrors, dashboard.getRecentActivitiesPost);
 
 module.exports = routing;

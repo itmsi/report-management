@@ -1,5 +1,5 @@
 const dashboardPaths = {
-  '/dashboard': {
+  '/powerbi/dashboard': {
     post: {
       tags: ['Dashboard'],
       summary: 'Get dashboard data',
