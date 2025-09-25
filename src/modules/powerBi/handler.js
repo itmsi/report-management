@@ -98,10 +98,16 @@ class PowerBiHandler {
         });
       }
 
+      // Get employeeHasPowerBi data
+      const employeeHasPowerBi = await EmployeeHasPowerBiRepository.getEmployeesByPowerBiId(id);
+
       res.json({
         success: true,
         message: 'PowerBI report retrieved successfully',
-        data: powerBi
+        data: {
+          ...powerBi,
+          employeeHasPowerBi: employeeHasPowerBi
+        }
       });
     } catch (error) {
       console.error('Error getting PowerBI report:', error);
