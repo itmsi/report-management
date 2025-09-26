@@ -8,12 +8,13 @@ const {
 class CategoriesHandler {
   async createCategory(req, res) {
     try {
-      const { name, description } = req.body;
+      const { name, description, order_no } = req.body;
       const createdBy = req.user?.user_id || null;
 
       const categoryData = {
         name,
         description,
+        order_no: order_no || 0,
         created_by: createdBy
       };
 
@@ -65,10 +66,10 @@ class CategoriesHandler {
     try {
       // Parse query parameters dengan konfigurasi standar
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['name', 'created_at', 'updated_at'],
-        defaultOrder: ['created_at', 'desc'],
+        allowedColumns: ['name', 'order_no', 'created_at', 'updated_at'],
+        defaultOrder: ['order_no', 'asc'],
         searchableColumns: ['name', 'description'],
-        allowedFilters: ['name'], // Menambahkan filter name untuk konsistensi
+        allowedFilters: ['name', 'order_no'], // Menambahkan filter name dan order_no untuk konsistensi
         maxLimit: 1000 // Categories mengizinkan limit hingga 1000
       });
 
@@ -92,7 +93,7 @@ class CategoriesHandler {
   async updateCategory(req, res) {
     try {
       const { id } = req.params;
-      const { name, description } = req.body;
+      const { name, description, order_no } = req.body;
       const updatedBy = req.user?.user_id || null;
 
       const existingCategory = await CategoriesRepository.findById(id);
@@ -109,6 +110,7 @@ class CategoriesHandler {
 
       if (name !== undefined) updateData.name = name;
       if (description !== undefined) updateData.description = description;
+      if (order_no !== undefined) updateData.order_no = order_no;
 
       const category = await CategoriesRepository.update(id, updateData);
 
@@ -216,10 +218,10 @@ class CategoriesHandler {
     try {
       // Parse query parameters dari body request
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['name', 'created_at', 'updated_at'],
-        defaultOrder: ['created_at', 'desc'],
+        allowedColumns: ['name', 'order_no', 'created_at', 'updated_at'],
+        defaultOrder: ['order_no', 'asc'],
         searchableColumns: ['name', 'description'],
-        allowedFilters: ['name'], // Menambahkan filter name
+        allowedFilters: ['name', 'order_no'], // Menambahkan filter name dan order_no
         fromBody: true, // Mengambil parameter dari body, bukan query string
         maxLimit: 1000 // Categories mengizinkan limit hingga 1000
       });
@@ -244,12 +246,13 @@ class CategoriesHandler {
   // POST /categories/create - Create category with POST method (alias untuk createCategory)
   async createCategoryPost(req, res) {
     try {
-      const { name, description } = req.body;
+      const { name, description, order_no } = req.body;
       const createdBy = req.user?.user_id || null;
 
       const categoryData = {
         name,
         description,
+        order_no: order_no || 0,
         created_by: createdBy
       };
 

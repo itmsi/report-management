@@ -19,6 +19,7 @@ class PowerBiRepository {
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
       .where('powerBis.powerbi_id', id)
       .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false)
       .select(
         'powerBis.*',
         'categories.name as category_name'
@@ -31,6 +32,7 @@ class PowerBiRepository {
     let query = db('powerBis')
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
       .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false)
       .select(
         'powerBis.*',
         'categories.name as category_name'
@@ -106,7 +108,8 @@ class PowerBiRepository {
   async count(filters = {}) {
     let query = db('powerBis')
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
-      .where('powerBis.is_delete', false);
+      .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false);
 
     // Apply filters
     if (filters.search) {
@@ -159,6 +162,7 @@ class PowerBiRepository {
     const baseQuery = db('powerBis')
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
       .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false)
       .select(
         'powerBis.*',
         'categories.name as category_name'
@@ -204,6 +208,7 @@ class PowerBiRepository {
     const countQuery = db('powerBis')
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
       .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false)
       .count('* as total');
     
     // Apply custom filters yang sama untuk count query
@@ -317,6 +322,7 @@ class PowerBiRepository {
     let query = db('powerBis')
       .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
       .where('powerBis.is_delete', false)
+      .where('categories.is_delete', false)
       .select(
         'powerBis.*',
         'categories.name as category_name'

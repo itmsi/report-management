@@ -18,6 +18,11 @@ const categoriesSchema = {
         maxLength: 1000,
         description: 'Category description'
       },
+      order_no: {
+        type: 'integer',
+        minimum: 0,
+        description: 'Order number for sorting categories'
+      },
       created_at: {
         type: 'string',
         format: 'date-time',
@@ -73,6 +78,12 @@ const categoriesSchema = {
         nullable: true,
         maxLength: 1000,
         description: 'Category description'
+      },
+      order_no: {
+        type: 'integer',
+        minimum: 0,
+        default: 0,
+        description: 'Order number for sorting categories'
       }
     },
     required: ['name']
@@ -100,20 +111,25 @@ const categoriesSchema = {
       },
       sort_by: {
         type: 'string',
-        enum: ['name', 'created_at', 'updated_at'],
-        default: 'created_at',
+        enum: ['name', 'order_no', 'created_at', 'updated_at'],
+        default: 'order_no',
         description: 'Sort field'
       },
       sort_order: {
         type: 'string',
         enum: ['asc', 'desc'],
-        default: 'desc',
+        default: 'asc',
         description: 'Sort order'
       },
       name: {
         type: 'string',
         maxLength: 100,
         description: 'Name'
+      },
+      order_no: {
+        type: 'integer',
+        minimum: 0,
+        description: 'Order number filter'
       }
     },
     example: {
@@ -138,6 +154,11 @@ const categoriesSchema = {
         nullable: true,
         maxLength: 1000,
         description: 'Category description'
+      },
+      order_no: {
+        type: 'integer',
+        minimum: 0,
+        description: 'Order number for sorting categories'
       }
     }
   },

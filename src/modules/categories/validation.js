@@ -13,6 +13,11 @@ const validateCreateCategory = [
     .isLength({ max: 1000 })
     .withMessage('Description must not exceed 1000 characters')
     .trim(),
+  body('order_no')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('Order number must be a non-negative integer')
+    .toInt(),
 ];
 
 const validateUpdateCategory = [
@@ -29,6 +34,11 @@ const validateUpdateCategory = [
     .isLength({ max: 1000 })
     .withMessage('Description must not exceed 1000 characters')
     .trim(),
+  body('order_no')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('Order number must be a non-negative integer')
+    .toInt(),
 ];
 
 const validateGetCategory = [
@@ -59,7 +69,7 @@ const validateListCategories = [
     .trim(),
   query('sort_by')
     .optional()
-    .isIn(['name', 'created_at', 'updated_at'])
+    .isIn(['name', 'order_no', 'created_at', 'updated_at'])
     .withMessage('Invalid sort field'),
   query('sort_order')
     .optional()
@@ -70,6 +80,11 @@ const validateListCategories = [
     .isLength({ max: 100 })
     .withMessage('Name filter must not exceed 100 characters')
     .trim(),
+  query('order_no')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('Order number filter must be a non-negative integer')
+    .toInt(),
 ];
 
 const validateListCategoriesPost = [
@@ -88,7 +103,7 @@ const validateListCategoriesPost = [
     .trim(),
   body('sort_by')
     .optional()
-    .isIn(['name', 'created_at', 'updated_at'])
+    .isIn(['name', 'order_no', 'created_at', 'updated_at'])
     .withMessage('Invalid sort field'),
   body('sort_order')
     .optional()
@@ -99,6 +114,11 @@ const validateListCategoriesPost = [
     .isLength({ max: 100 })
     .withMessage('Name filter must not exceed 100 characters')
     .trim(),
+  body('order_no')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('Order number filter must be a non-negative integer')
+    .toInt(),
 ];
 
 const handleValidationErrors = (req, res, next) => {

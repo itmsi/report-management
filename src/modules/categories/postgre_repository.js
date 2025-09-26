@@ -8,6 +8,18 @@ const {
 
 class CategoriesRepository {
   async create(data) {
+    // Check for duplicate order_no if provided
+    if (data.order_no !== undefined && data.order_no !== null) {
+      const existingCategory = await db('categories')
+        .where('order_no', data.order_no)
+        .where('is_delete', false)
+        .first();
+      
+      if (existingCategory) {
+        throw new Error(`Order number ${data.order_no} already exists`);
+      }
+    }
+
     const [category] = await db('categories')
       .insert(data)
       .returning('*');
@@ -46,6 +58,19 @@ class CategoriesRepository {
   }
 
   async update(id, data) {
+    // Check for duplicate order_no if provided
+    if (data.order_no !== undefined && data.order_no !== null) {
+      const existingCategory = await db('categories')
+        .where('order_no', data.order_no)
+        .where('is_delete', false)
+        .where('category_id', '!=', id)
+        .first();
+      
+      if (existingCategory) {
+        throw new Error(`Order number ${data.order_no} already exists`);
+      }
+    }
+
     const [category] = await db('categories')
       .where('category_id', id)
       .where('is_delete', false)
