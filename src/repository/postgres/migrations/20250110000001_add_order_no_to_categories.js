@@ -9,6 +9,7 @@ exports.up = function (knex) {
     table.index(['order_no']);
   }).then(() => {
     // Update existing records to have unique order_no values
+    // Handle both active and deleted records separately
     return knex.raw(`
       UPDATE categories 
       SET order_no = subquery.row_number 
@@ -16,6 +17,18 @@ exports.up = function (knex) {
         SELECT category_id, ROW_NUMBER() OVER (ORDER BY created_at) as row_number
         FROM categories 
         WHERE is_delete = false
+      ) AS subquery 
+      WHERE categories.category_id = subquery.category_id
+    `);
+  }).then(() => {
+    // Update deleted records to have unique negative order_no values
+    return knex.raw(`
+      UPDATE categories 
+      SET order_no = subquery.row_number * -1
+      FROM (
+        SELECT category_id, ROW_NUMBER() OVER (ORDER BY created_at) as row_number
+        FROM categories 
+        WHERE is_delete = true
       ) AS subquery 
       WHERE categories.category_id = subquery.category_id
     `);
