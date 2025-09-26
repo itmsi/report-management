@@ -123,7 +123,7 @@ class PowerBiHandler {
     try {
       // Parse query parameters dengan konfigurasi standar
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at', 'order_no'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description'],
         allowedFilters: ['category_id', 'status'],
@@ -305,7 +305,7 @@ class PowerBiHandler {
 
       // Parse query parameters untuk endpoint ini juga
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['title', 'status', 'created_at', 'updated_at'],
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at', 'order_no'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description'],
         allowedFilters: ['status'],
@@ -357,7 +357,7 @@ class PowerBiHandler {
     try {
       // Parse query parameters dari body dengan konfigurasi standar
       const queryParams = parseStandardQuery(req, {
-        allowedColumns: ['title', 'status', 'created_at', 'updated_at', 'powerbi_id', 'category_id'],
+        allowedColumns: ['title', 'status', 'created_at', 'updated_at', 'powerbi_id', 'category_id', 'order_no'],
         defaultOrder: ['created_at', 'desc'],
         searchableColumns: ['powerBis.title', 'powerBis.description'],
         allowedFilters: ['category_id', 'status', 'created_by', 'updated_by', 'title', 'description'],

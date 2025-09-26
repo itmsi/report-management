@@ -165,7 +165,8 @@ class PowerBiRepository {
       .where('categories.is_delete', false)
       .select(
         'powerBis.*',
-        'categories.name as category_name'
+        'categories.name as category_name',
+        'categories.order_no as category_order_no'
       );
 
     // Simpan custom filters untuk digunakan di count query
@@ -300,6 +301,7 @@ class PowerBiRepository {
                      queryParams.sorting.sortBy === 'created_at' ? 'powerBis.created_at' :
                      queryParams.sorting.sortBy === 'updated_at' ? 'powerBis.updated_at' :
                      queryParams.sorting.sortBy === 'powerbi_id' ? 'powerBis.powerbi_id' :
+                     queryParams.sorting.sortBy === 'order_no' ? 'categories.order_no' :
                      'powerBis.created_at';
     
     dataQuery = dataQuery.orderBy(sortColumn, queryParams.sorting.sortOrder);
