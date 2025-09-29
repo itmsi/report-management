@@ -112,6 +112,13 @@ HEALTH_CHECK_INTERVAL=30000
 METRICS_ENABLED=true
 METRICS_PORT=9091
 
+# Prometheus Configuration
+PROMETHEUS_ENABLED=true
+PROMETHEUS_SERVER_URL=https://prometheus.motorsights.com
+PROMETHEUS_SCRAPE_INTERVAL=15s
+PROMETHEUS_METRICS_PATH=/metrics
+PROMETHEUS_JOB_NAME=report-management
+
 # Development/Testing Configuration
 DEBUG_ENABLED=true
 SWAGGER_ENABLED=development

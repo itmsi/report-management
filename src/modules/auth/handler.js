@@ -12,11 +12,24 @@ const repository = require('./postgre_repository')
 const { baseResponse, decodeToken } = require('../../utils')
 const { customerSigninLimiter } = require('../../middlewares')
 const { TABLE } = require('./column')
+const { trackUserLogin } = require('../../middlewares/prometheus')
 
 const signin = async (req, res) => {
   const where = { username: req?.body?.username }
   const password = req?.body?.password
   const result = await repository.getByParam(where, password)
+  
+  // Track login metrics
+  try {
+    if (result.success) {
+      trackUserLogin('admin', `status:success`)
+    } else {
+      trackUserLogin('admin', `status:failed`)
+    }
+  } catch (err) {
+    console.error('Failed to track login metrics:', err)
+  }
+  
   return baseResponse(res, result)
 }
 

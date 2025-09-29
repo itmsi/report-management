@@ -18,6 +18,7 @@ const {
 const healthCheck = require('./routes')
 const apiV1 = require('./routes/V1')
 const { initListener } = require('./listeners')
+const { prometheusMiddleware } = require('./middlewares/prometheus')
 
 // Conditionally initialize listeners only if RabbitMQ is enabled
 if (process.env.RABBITMQ_ENABLED === 'true' && process.env.RABBITMQ_URL && process.env.RABBITMQ_URL !== 'disabled') {
@@ -39,6 +40,10 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   app.use(morgan(MORGAN_FORMAT.DEV, { stream: process.stderr }))
 }
+
+// Prometheus monitoring middleware
+app.use(prometheusMiddleware)
+
 app.use(healthCheck) // routing
 app.use(apiV1) // routing
 app.use('/public', express.static('public')) // for public folder

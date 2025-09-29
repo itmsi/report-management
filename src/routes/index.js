@@ -1,6 +1,7 @@
 const express = require('express')
 const swaggerUi = require('swagger-ui-express')
 const { baseResponse, fullDateFormatIndo } = require('../utils')
+const { register } = require('../config/prometheus')
 
 const router = express.Router()
 const { index } = require('../static')
@@ -42,6 +43,17 @@ const isSwaggerEnabled = () => {
   // Default behavior (backward compatibility)
   return process?.env?.NODE_ENV === 'development'
 }
+
+// Prometheus metrics endpoint
+router.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType)
+    const metrics = await register.metrics()
+    res.end(metrics)
+  } catch (ex) {
+    res.status(500).end(ex)
+  }
+})
 
 if (isSwaggerEnabled()) {
   router.use('/documentation', swaggerUi.serve)
