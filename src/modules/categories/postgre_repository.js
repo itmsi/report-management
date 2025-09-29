@@ -8,8 +8,8 @@ const {
 
 class CategoriesRepository {
   async create(data) {
-    // Check for duplicate order_no if provided
-    if (data.order_no !== undefined && data.order_no !== null) {
+    // Check for duplicate order_no if provided and not zero
+    if (data.order_no !== undefined && data.order_no !== null && data.order_no !== 0) {
       const existingCategory = await db('categories')
         .where('order_no', data.order_no)
         .where('is_delete', false)
@@ -58,8 +58,8 @@ class CategoriesRepository {
   }
 
   async update(id, data) {
-    // Check for duplicate order_no if provided
-    if (data.order_no !== undefined && data.order_no !== null) {
+    // Check for duplicate order_no if provided and not zero
+    if (data.order_no !== undefined && data.order_no !== null && data.order_no !== 0) {
       const existingCategory = await db('categories')
         .where('order_no', data.order_no)
         .where('is_delete', false)
