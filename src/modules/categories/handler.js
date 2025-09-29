@@ -14,9 +14,13 @@ class CategoriesHandler {
       const categoryData = {
         name,
         description,
-        order_no: order_no || 0,
         created_by: createdBy
       };
+      
+      // Only add order_no if it's explicitly provided
+      if (order_no !== undefined) {
+        categoryData.order_no = order_no;
+      }
 
       const category = await CategoriesRepository.create(categoryData);
 
@@ -252,9 +256,13 @@ class CategoriesHandler {
       const categoryData = {
         name,
         description,
-        order_no: order_no || 0,
         created_by: createdBy
       };
+      
+      // Only add order_no if it's explicitly provided
+      if (order_no !== undefined) {
+        categoryData.order_no = order_no;
+      }
 
       const category = await CategoriesRepository.create(categoryData);
 
