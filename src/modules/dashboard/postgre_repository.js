@@ -23,13 +23,16 @@ class DashboardRepository {
 
       // Base query untuk data dengan JOIN ke categories dan employeeHasPowerBi
       const baseQuery = db('powerBis')
-        .select([
+        .distinct([
+          'powerBis.powerbi_id',
           'categories.name as category_name',
           'powerBis.title',
           'powerBis.status',
           'powerBis.link',
           'powerBis.file',
-          'powerBis.description'
+          'powerBis.description',
+          'powerBis.created_at',
+          'powerBis.updated_at'
         ])
         .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
         .leftJoin('employeeHasPowerBi', 'powerBis.powerbi_id', 'employeeHasPowerBi.powerbi_id')
@@ -111,7 +114,7 @@ class DashboardRepository {
         });
       }
 
-      const [{ count: total }] = await countQueryFiltered.count('powerBis.powerbi_id as count');
+      const [{ count: total }] = await countQueryFiltered.countDistinct('powerBis.powerbi_id as count');
 
       // Apply sorting dengan explicit table prefix
       let sortColumn = queryParams.sorting.sortBy;
