@@ -14,6 +14,13 @@ class DashboardRepository {
    */
   async findWithFilters(queryParams) {
     try {
+      // Cek apakah employee_id khusus ada di tabel employeeHasPowerBi (permission all)
+      const specialEmployeeId = '550e8400-e29b-41d4-a716-446655440000';
+      const hasAllPermission = await db('employeeHasPowerBi')
+        .where('employee_id', specialEmployeeId)
+        .where('is_delete', false)
+        .first();
+
       // Base query untuk data dengan JOIN ke categories dan employeeHasPowerBi
       const baseQuery = db('powerBis')
         .select([
@@ -34,7 +41,8 @@ class DashboardRepository {
       let filteredQuery = baseQuery.clone();
       
       // Filter berdasarkan employee_id dari token (WAJIB)
-      if (queryParams.employeeId) {
+      // Skip filter jika user memiliki permission all
+      if (queryParams.employeeId && !hasAllPermission) {
         filteredQuery = filteredQuery.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
       }
       
@@ -74,7 +82,8 @@ class DashboardRepository {
       let countQueryFiltered = countQuery.clone();
       
       // Filter berdasarkan employee_id dari token (WAJIB)
-      if (queryParams.employeeId) {
+      // Skip filter jika user memiliki permission all
+      if (queryParams.employeeId && !hasAllPermission) {
         countQueryFiltered = countQueryFiltered.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
       }
       
