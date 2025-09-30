@@ -14,14 +14,11 @@ class DashboardRepository {
    */
   async findWithFilters(queryParams) {
     try {
-      // Cek apakah employee_id khusus ada di tabel employeeHasPowerBi (permission all)
+      // Special employee ID untuk shared/public PowerBI yang bisa dilihat semua user
       const specialEmployeeId = '550e8400-e29b-41d4-a716-446655440000';
-      const hasAllPermission = await db('employeeHasPowerBi')
-        .where('employee_id', specialEmployeeId)
-        .where('is_delete', false)
-        .first();
 
       // Base query untuk data dengan JOIN ke categories dan employeeHasPowerBi
+      // Menggunakan INNER JOIN agar hanya menampilkan PowerBI yang ada di employeeHasPowerBi
       const baseQuery = db('powerBis')
         .distinct([
           'powerBis.powerbi_id',
@@ -35,18 +32,25 @@ class DashboardRepository {
           'powerBis.updated_at'
         ])
         .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
-        .leftJoin('employeeHasPowerBi', 'powerBis.powerbi_id', 'employeeHasPowerBi.powerbi_id')
+        .innerJoin('employeeHasPowerBi', function() {
+          this.on('powerBis.powerbi_id', '=', 'employeeHasPowerBi.powerbi_id')
+              .andOn('employeeHasPowerBi.is_delete', '=', db.raw('?', [false]));
+        })
         .where('powerBis.is_delete', false)
-        .where('categories.is_delete', false)
-        .where('employeeHasPowerBi.is_delete', false);
+        .where('categories.is_delete', false);
 
       // Apply custom filters dengan explicit table prefix
       let filteredQuery = baseQuery.clone();
       
-      // Filter berdasarkan employee_id dari token (WAJIB)
-      // Skip filter jika user memiliki permission all
-      if (queryParams.employeeId && !hasAllPermission) {
-        filteredQuery = filteredQuery.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
+      // Filter berdasarkan employee_id dari token OR special employee ID (shared/public)
+      // Setiap user akan melihat:
+      // 1. PowerBI yang di-assign ke mereka sendiri
+      // 2. PowerBI yang di-assign ke special employee ID (shared for all)
+      if (queryParams.employeeId) {
+        filteredQuery = filteredQuery.where(function() {
+          this.where('employeeHasPowerBi.employee_id', queryParams.employeeId)
+              .orWhere('employeeHasPowerBi.employee_id', specialEmployeeId);
+        });
       }
       
       if (queryParams.filters.category_id) {
@@ -76,18 +80,22 @@ class DashboardRepository {
       // Query untuk count total records - hanya count tanpa select kolom lain
       const countQuery = db('powerBis')
         .leftJoin('categories', 'powerBis.category_id', 'categories.category_id')
-        .leftJoin('employeeHasPowerBi', 'powerBis.powerbi_id', 'employeeHasPowerBi.powerbi_id')
+        .innerJoin('employeeHasPowerBi', function() {
+          this.on('powerBis.powerbi_id', '=', 'employeeHasPowerBi.powerbi_id')
+              .andOn('employeeHasPowerBi.is_delete', '=', db.raw('?', [false]));
+        })
         .where('powerBis.is_delete', false)
-        .where('categories.is_delete', false)
-        .where('employeeHasPowerBi.is_delete', false);
+        .where('categories.is_delete', false);
 
       // Apply filters yang sama ke count query
       let countQueryFiltered = countQuery.clone();
       
-      // Filter berdasarkan employee_id dari token (WAJIB)
-      // Skip filter jika user memiliki permission all
-      if (queryParams.employeeId && !hasAllPermission) {
-        countQueryFiltered = countQueryFiltered.where('employeeHasPowerBi.employee_id', queryParams.employeeId);
+      // Filter berdasarkan employee_id dari token OR special employee ID (shared/public)
+      if (queryParams.employeeId) {
+        countQueryFiltered = countQueryFiltered.where(function() {
+          this.where('employeeHasPowerBi.employee_id', queryParams.employeeId)
+              .orWhere('employeeHasPowerBi.employee_id', specialEmployeeId);
+        });
       }
       
       if (queryParams.filters.category_id) {
