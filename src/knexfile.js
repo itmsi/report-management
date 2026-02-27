@@ -10,6 +10,7 @@ module.exports = {
       user: process.env.DB_USER_DEV,
       password: process.env.DB_PASS_DEV,
       database: process.env.DB_NAME_DEV,
+      application_name: process.env.SERVICE_NAME || 'report-management-power-bi',
     },
     debug: false,
     migrations: {
@@ -28,6 +29,7 @@ module.exports = {
       user: process.env.DB_USER_PROD,
       password: process.env.DB_PASS_PROD,
       database: process.env.DB_NAME_PROD,
+      application_name: process.env.SERVICE_NAME || 'report-management-power-bi',
     },
     debug: process.env.NODE_ENV !== 'production',
     migrations: {
@@ -46,6 +48,7 @@ module.exports = {
       user: process.env.DB_USER_TEST,
       password: process.env.DB_PASS_TEST,
       database: process.env.DB_NAME_TEST,
+      application_name: process.env.SERVICE_NAME || 'report-management-power-bi',
     },
     debug: true,
     migrations: {

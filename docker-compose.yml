@@ -23,6 +23,9 @@ services:
       # Override untuk production server
       - NODE_ENV=production
       - APP_PORT=9604
+      - SERVICE_NAME=report-management-power-bi
+      - DATABASE_URL=${DATABASE_URL}?application_name=report-management-power-bi
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://tempo:4318}
       # RABBITMQ_URL akan diambil dari file .env via env_file
       # Override database host jika database di container/service lain (contoh)
       # - DB_HOST_PROD=postgres-service  # Uncomment jika DB di container lain

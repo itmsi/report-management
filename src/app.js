@@ -19,6 +19,8 @@ const healthCheck = require('./routes')
 const apiV1 = require('./routes/V1')
 const { initListener } = require('./listeners')
 const { prometheusMiddleware } = require('./middlewares/prometheus')
+const pinoHttp = require('pino-http')
+const pinoLogger = require('./utils/pino_logger')
 
 // Conditionally initialize listeners only if RabbitMQ is enabled
 if (process.env.RABBITMQ_ENABLED === 'true' && process.env.RABBITMQ_URL && process.env.RABBITMQ_URL !== 'disabled') {
@@ -35,6 +37,8 @@ app.use(methodOverride()) // lets you use HTTP verbs
 app.use(xss()) // handler xss attack
 app.use(express.json({ limit })) // json limit
 app.use(express.urlencoded({ limit, extended: true })) // urlencoded limit
+
+app.use(pinoHttp({ logger: pinoLogger }))
 if (process.env.NODE_ENV === 'production') {
   app.use(morgan(MORGAN_FORMAT.PROD))
 } else {

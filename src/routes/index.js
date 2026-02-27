@@ -2,6 +2,7 @@ const express = require('express')
 const swaggerUi = require('swagger-ui-express')
 const { baseResponse, fullDateFormatIndo } = require('../utils')
 const { register } = require('../config/prometheus')
+const { pgCore } = require('../config/database')
 
 const router = express.Router()
 const { index } = require('../static')
@@ -43,6 +44,28 @@ const isSwaggerEnabled = () => {
   // Default behavior (backward compatibility)
   return process?.env?.NODE_ENV === 'development'
 }
+
+router.get('/health', async (req, res) => {
+  try {
+    await pgCore.raw('SELECT 1')
+    res.status(200).json({
+      status: 'ok',
+      service: process.env.SERVICE_NAME || 'report-management-power-bi',
+      database: 'ok'
+    })
+  } catch (error) {
+    if (req.log) {
+      req.log.error(error, 'Database health check failed')
+    } else {
+      console.error('Database health check failed', error)
+    }
+    res.status(503).json({
+      status: 'fail',
+      service: process.env.SERVICE_NAME || 'report-management-power-bi',
+      database: 'fail'
+    })
+  }
+})
 
 // Prometheus metrics endpoint
 router.get('/metrics', async (req, res) => {
