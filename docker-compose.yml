@@ -11,7 +11,7 @@ services:
       - .env
     restart: unless-stopped
     ports:
-      - "9604:9604"
+      - "127.0.0.1:9604:9604"
     volumes:
       - ./logs:/app/logs
       - ./public:/app/public
@@ -45,7 +45,7 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9604/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test: [ "CMD", "node", "-e", "require('http').get('http://localhost:9604/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -58,5 +58,5 @@ services:
 
 networks:
   infra_net:
-    external: true  # PENTING! Gunakan network yang sudah ada
-    name: infra_net  # Network untuk nginx dan cloudflare tunnel
+    external: true # PENTING! Gunakan network yang sudah ada
+    name: infra_net # Network untuk nginx dan cloudflare tunnel
